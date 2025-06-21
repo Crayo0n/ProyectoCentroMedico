@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pacientes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pacientes.css') }}">
+</head>
+<body>
+    <div class="container">
+       <!-- Barra lateral -->
+        <aside class="sidebar">
+        <div class="logo-wrapper">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+        </div>
+            <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
+            <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
+        </aside>
+
+        <!-- Main content -->
+        <main class="main">
+            <header class="header">
+                <h1>Pacientes</h1>
+                <button class="btn-agregar">Agregar</button>
+            </header>
+
+            <h3>Buscador</h3>
+            <div class="buscador">
+                <input type="text" id="buscador" placeholder="Buscar paciente...">
+               <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar"></button> 
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Fecha Nacimiento</th>
+                        <th>Enfermedades</th>
+                        <th>Alergias</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for _ in range(5) %}
+                    <tr>
+                        <td>1</td>
+                        <td>Juan Pérez</td>
+                        <td>1990-05-10</td>
+                        <td>Hipertensión</td>
+                        <td>Penicilina</td>
+                        <td>
+                            <button class="btn-editar">Editar</button>
+                            <button class="btn-explorar">Exploración</button>
+                            <button class="btn-eliminar">Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </main>
+    </div>
+</body>
+</html>
