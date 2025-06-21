@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar médico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/agregar_medico.css') }}">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+        <div class="logo-wrapper">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+        </div>
+        </aside>
+
+        <div class="form-container">
+                <h1>Agregar médico</h1>
+            
+            <div class="form-box">
+                <form method="POST" action="/admin/agregar">
+                    <label for="rfc">RFC:</label>
+                    <input type="text" id="rfc" name="rfc" required>
+
+                    <label for="nombre">Nombre completo:</label>
+                    <input type="text" id="nombre" name="nombre" required>
+
+                    <label for="cedula">Cédula profesional:</label>
+                    <input type="text" id="cedula" name="cedula" required>
+
+                    <label for="correo">Correo:</label>
+                    <input type="email" id="correo" name="correo" required>
+
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" name="password" required>
+
+                    <label for="rol">Rol:</label>
+                    <select id="rol" name="rol" required>
+                        <option value="" disabled selected>Elija uno</option>
+                        <option value="administrador">Administrador</option>
+                        <option value="general">Médico general</option>
+                    </select>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="guardar">Guardar</button>
+                        <a href="/admin/doctores" class="cancelar">Cancelar</a>
+                    </div>
+                </form>
+            </div>    
+        </div>
+    </div>
+</body>
+</html>
