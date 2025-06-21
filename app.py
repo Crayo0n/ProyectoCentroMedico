@@ -6,6 +6,11 @@ app = Flask(__name__)
 def login():
     return render_template('login.html')
 
+@app.route('/doctores')
+def doctores():
+    return render_template('doctores.html')
+
+
 
 
 if __name__ == '__main__':

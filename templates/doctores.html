@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administración de Médicos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/doctores.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Barra lateral -->
+        <aside class="sidebar">
+        <div class="logo-wrapper">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+        </div>
+            <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
+            <img src="{{ url_for('static', filename='img/doctores.png') }}" alt="Médicos" class="sidebar-icon">
+            <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="main">
+            <header class="header">
+                <h1>Administración de Médicos</h1>
+                <button class="btn-agregar">Agregar</button>
+            </header>
+
+            <h3>Buscador</h3>
+            <div class="buscador">
+                <input type="text" id="buscador" placeholder="Buscar médico...">
+               <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar"></button> 
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>RFC</th>
+                        <th>Correo</th>
+                        <th>Cédula Profesional</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for _ in range(5) %}
+                    <tr>
+                        <td>1</td>
+                        <td>ABCD010203XYZ</td>
+                        <td>correo@ejemplo.com</td>
+                        <td>1234567</td>
+                        <td>Administrador</td>
+                        <td>
+                            <button class="btn-editar">Editar</button>
+                            <button class="btn-eliminar">Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </main>
+    </div>
+</body>
+</html>
