@@ -6,30 +6,33 @@ app = Flask(__name__)
 def login():
     return render_template('login.html')
 
+
+#Modulo de Médicos
 @app.route('/medicos')
 def doctores():
-    return render_template('doctores.html')
-
+    return render_template('/Medicos/medicos.html')
 
 @app.route('/medicos/agregar')
 def doctores_agregar():
-    return render_template('agregar_medico.html')
+    return render_template('/Medicos/agregar_medico.html')
 
 @app.route('/medicos/editar')
 def doctores_editar():
-    return render_template('editar_medico.html')
+    return render_template('/Medicos/editar_medico.html')
 
+
+#Modulo de Pacientes
 @app.route('/pacientes')
 def pacientes():
-    return render_template('pacientes.html')
+    return render_template('/Pacientes/pacientes.html')
 
 @app.route('/pacientes/agregar')
 def pacientes_agregar():
-    return render_template('agregar_pacientes.html')
+    return render_template('/Pacientes/agregar_pacientes.html')
 
 @app.route('/pacientes/editar')
 def pacientes_editar():
-    return render_template('editar_pacientes.html')
+    return render_template('/Pacientes/editar_pacientes.html')
 
 @app.route('/pacientes/exploracion')
 def paciente_exploracion():

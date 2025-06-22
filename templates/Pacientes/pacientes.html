@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Pacientes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/pacientes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/pacientes.css') }}">
 </head>
 <body>
     <div class="container">
@@ -49,8 +49,8 @@
                         <td>Hipertensión</td>
                         <td>Penicilina</td>
                         <td>
-                            <a href="/pacientes/editar" class="btn-editar">Editar</a>
-                            <a href="/pacientes/exploracion" class="btn-editar">Exploración</a>
+                            <button class="btn-editar"><a href="/pacientes/editar" >Editar</a></button>
+                            <a href="/pacientes/exploracion" class="btn-explorar">Exploración</a>
                             <button class="btn-eliminar">Eliminar</button>
                         </td>
                     </tr>
