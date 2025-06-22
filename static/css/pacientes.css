@@ -6,7 +6,8 @@ body {
 
 .container {
     display: flex;
-    height: 100vh;
+    flex-grow: 1;
+    height: 100%;
 }
 
 /* Barra lateral */

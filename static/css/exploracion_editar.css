@@ -21,6 +21,21 @@ body {
     gap: 50px;
 }
 
+.sidebar-iconSalir {
+    width: 70px;
+    height: 75px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.sidebar-icon:hover, .sidebar-iconLogo:hover, .sidebar-iconSalir:hover  {
+    transform: scale(1.1);
+}
+
+.logout {
+    margin-top: auto;
+}
+
 .logo-wrapper {
     width: 55px;
     height: 55px;
@@ -42,7 +57,7 @@ body {
 .form-container {
     flex-grow: 1;
     display: flex;
-    flex-direction: column;   /
+    flex-direction: column;
     justify-content: center;  
     align-items: center;      
 }

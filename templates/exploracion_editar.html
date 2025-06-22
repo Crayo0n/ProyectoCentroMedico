@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar exploración del paciente</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/exploracion_paciente.css') }}">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo-wrapper">
+                <img src="{{ url_for('static', filename='img/icons/logo.svg') }}" alt="Logo" class="logo-icon">
+                <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
+
+            </div>
+        </aside>
+
+        <div class="form-container">
+            <div class="form-box">
+                <h1>Editar exploración del paciente</h1>
+                <form method="POST" action="/admin/exploracion/paciente">
+                    <label for="paciente">Paciente:</label>
+                    <input type="text" id="paciente" name="paciente" required>
+
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha" name="fecha" required>
+
+                    <label for="peso">Peso:</label>
+                    <input type="number" id="peso" name="peso" required>
+
+                    <label for="altura">Altura:</label>
+                    <input type="number" id="altura" name="altura" required>
+
+                    <label for="temperatura">Temperatura:</label>
+                    <input type="number" id="temperatura" name="temperatura" required>
+
+                    <label for="latidos">Latidos por minuto:</label>
+                    <input type="number" id="latidos" name="latidos" required>
+
+                    <label for="saturacion">Saturación de oxígeno:</label>
+                    <input type="number" id="saturacion" name="saturacion" required>
+
+                    <label for="edad">Edad:</label>
+                    <input type="number" id="edad" name="edad" required>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="guardar">Actualizar</button>
+                        <a href="/pacientes" class="cancelar">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

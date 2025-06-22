@@ -19,5 +19,25 @@ def doctores_agregar():
 def doctores_editar():
     return render_template('editar_medico.html')
 
+@app.route('/pacientes')
+def pacientes():
+    return render_template('pacientes.html')
+
+@app.route('/pacientes/agregar')
+def pacientes_agregar():
+    return render_template('agregar_pacientes.html')
+
+@app.route('/pacientes/editar')
+def pacientes_editar():
+    return render_template('editar_pacientes.html')
+
+@app.route('/pacientes/exploracion')
+def paciente_exploracion():
+    return render_template('exploracion_paciente.html')
+
+@app.route('/pacientes/exploracion/editar')
+def exploracion_editar():
+    return render_template('exploracion_editar.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
