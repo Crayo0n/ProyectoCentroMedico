@@ -6,9 +6,9 @@ body {
 
 .container {
     display: flex;
-    flex-grow: 1;
     height: 100%;
 }
+
 
 /* Barra Lateral */
 .sidebar {
@@ -53,66 +53,84 @@ body {
     transition: transform 0.2s ease;
 }
 
-/* Formulario */
 .form-container {
     flex-grow: 1;
     display: flex;
-    flex-direction: column;
-    justify-content: center;  
-    align-items: center;      
+    justify-content: center;
+    align-items: center;
 }
-
 
 .form-box {
     width: 100%;
-    max-width: 500px;
+    max-width: 700px;  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-
-
-.form-container h1 {
+h1 {
+    font-size: 50px;  
     color: #1565c0;
-    font-size: 70px;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    font-weight: bold;
 }
 
 form {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    max-width: 500px;
+    align-items: flex-start;
 }
 
 label {
-    margin: 10px 0 5px;
     font-weight: bold;
-    font-size: 25px;
+    margin-bottom: 10px;  
+    color: #1565c0;
+    font-size: 18px;  
+}
+
+textarea {
+    width: 100%;
+    padding: 15px;  
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    font-size: 18px;  
+    margin-bottom: 20px;  
+    outline: none;
+    resize: vertical;  
+}
+
+textarea::placeholder {
+    font-style: italic;
+    color: #999;
+}
+
+.estudios {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.estudios label {
+    font-size: 18px;
     color: #1565c0;
 }
 
-
-input, select {
-    padding: 10px;
-    border-radius: 20px;
-    border: 1px solid #999;
-    font-size: 15px;
-    outline: none;
-    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
-}
-
 .form-buttons {
-    margin-top: 30px;
+    width: 100%;
     display: flex;
-    justify-content: center; 
-    gap: 20px;               
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
 }
 
 .guardar {
     background-color: #1f80e0;
     color: white;
     border: none;
-    padding: 20px 40px;
+    padding: 15px 40px;  
     border-radius: 20px;
-    font-size: 20px;
+    font-size: 20px;  
     font-weight: bold;
     cursor: pointer;
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
@@ -122,20 +140,19 @@ input, select {
     background-color: #e74c3c;
     color: white;
     text-decoration: none;
-    padding: 20px 40px;
+    padding: 15px 40px;  
     border-radius: 20px;
-    font-size: 20px;
+    font-size: 20px;  
     font-weight: bold;
-    display: inline-block;
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.cancelar:hover{
-    background-color: #ad2626;
+.guardar:hover{
+    background-color: #144999;
     transform: scale(1.1);
 }
 
-.guardar:hover{
-    background-color: #112f92;
+.cancelar:hover{
+    background-color: #991414;
     transform: scale(1.1);
 }

@@ -10,7 +10,7 @@ body {
     height: 100%;
 }
 
-/* Barra Lateral */
+/* Barra lateral */
 .sidebar {
     background-color: #fafafa;
     padding: 20px 10px;
@@ -21,14 +21,11 @@ body {
     gap: 50px;
 }
 
-.logo-wrapper {
-    width: 55px;
-    height: 55px;
-    background-color: #d6eaff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.sidebar-icon {
+    width: 60px;
+    height: 80px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
 .sidebar-iconLogo {
@@ -36,6 +33,25 @@ body {
     height: 80px;
     cursor: pointer;
     transition: transform 0.2s ease;
+}
+
+.logo-wrapper {
+    width: 70px;
+    height: 70px;
+    background-color: #d6eaff; 
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.sidebar-icon:hover, .sidebar-iconLogo:hover  {
+    transform: scale(1.1);
+}
+
+.logout {
+    margin-top: auto;
 }
 
 /* Formulario */

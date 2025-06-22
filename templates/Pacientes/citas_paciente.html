@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pacientes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/pacientes.css') }}">
+    <title>Citas del paciente</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/citas_paciente.css') }}">
 </head>
 <body>
     <div class="container">
@@ -19,13 +19,13 @@
         <!-- Main content -->
         <main class="main">
             <header class="header">
-                <h1>Pacientes</h1>
+                <h1>Citas del paciente </h1>
                 <a href="/pacientes/agregar" class="btn-agregar">Agregar</a>
             </header>
 
             <h3>Buscador</h3>
             <div class="buscador">
-                <input type="text" id="buscador" placeholder="Buscar paciente...">
+                <input type="text" id="buscador" placeholder="Buscar cita...">
                <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar"></button> 
             </div>
 
@@ -33,10 +33,12 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Fecha Nacimiento</th>
-                        <th>Enfermedades</th>
-                        <th>Alergias</th>
+                        <th>Fecha</th>
+                        <th>Peso</th>
+                        <th>Temperatura</th>
+                        <th>Latidos por minuto</th>
+                        <th>Glucosa</th>
+                        <th>Edad</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -44,13 +46,16 @@
                     {% for _ in range(5) %}
                     <tr>
                         <td>1</td>
-                        <td>Juan Pérez</td>
                         <td>1990-05-10</td>
-                        <td>Hipertensión</td>
-                        <td>Penicilina</td>
+                        <td>60 kg</td>
+                        <td>34 C</td>
+                        <td>120</td>
+                        <td>10</td>
+                        <td>21</td>
                         <td>
-                            <button class="btn-editar"><a href="/pacientes/editar" >Editar</a></button>
-                            <button class="btn-explorar"><a href="/pacientes/exploracion">Exploración</a></button>
+                            <button class="btn-editar"><a>Editar</a></button>
+                            <button class="btn-explorar"><a>Diagnóstico</a></button>
+                            <button class="btn-descargar"><a>Descargar receta</a></button>
                             <button class="btn-eliminar">Eliminar</button>
                         </td>
                     </tr>

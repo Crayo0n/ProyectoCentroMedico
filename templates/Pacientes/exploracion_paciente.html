@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Exploración del paciente</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/exploracion_paciente.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/AgregarEditarExploracion.css') }}">
 </head>
 <body>
     <div class="container">
+       <!-- Barra lateral -->
         <aside class="sidebar">
-            <div class="logo-wrapper">
-                <img src="{{ url_for('static', filename='img/icons/logo.svg') }}" alt="Logo" class="logo-icon">
-                <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
-
-            </div>
+        <div class="logo-wrapper">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+        </div>
         </aside>
 
         <div class="form-container">

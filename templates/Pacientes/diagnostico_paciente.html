@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagnóstico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/diagnostico_paciente.css') }}">
+</head>
+<body>
+    <div class="container">
+       <!-- Barra lateral -->
+        <aside class="sidebar">
+        <div class="logo-wrapper">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+        </div>
+        </aside>
+
+        <div class="form-container">
+            <div class="form-box">
+                <h1>Diagnóstico</h1>
+                <form method="POST" action="/admin/diagnostico">
+                    <label for="sintomas">Síntomas:</label>
+                    <textarea id="sintomas" name="sintomas"  required></textarea>
+
+                    <label for="diagnostico">Diagnóstico:</label>
+                    <textarea id="diagnostico" name="diagnostico"  required></textarea>
+
+                    <label for="tratamiento">Tratamiento:</label>
+                    <textarea id="tratamiento" name="tratamiento" required></textarea>
+
+                    <label for="estudios">¿Requiere estudios?</label>
+                    <div class="estudios">
+                        <label><input type="radio" name="estudios" value="si" required> Sí</label>
+                        <label><input type="radio" name="estudios" value="no" required> No</label>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="guardar">Guardar</button>
+                        <a class="cancelar">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
