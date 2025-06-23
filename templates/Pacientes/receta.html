@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Previsualizar Receta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/receta.css') }}">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo-wrapper">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+            </div>
+        </aside>
+
+        <div class="form-container">
+            <div class="form-box">
+                <h1>Previsualizar Receta</h1>
+
+                <!-- Previsualización del PDF -->
+
+                <div class="form-buttons">
+                    <a href="{{ url_for('descargar_receta', paciente_id=paciente_id) }}" class="btn-descargar">Descargar PDF</a>
+                    <a href="/admin/pacientes" class="cancelar">Cancelar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
