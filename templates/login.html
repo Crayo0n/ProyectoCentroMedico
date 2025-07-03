@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - Centro Médico</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-box">
-        <div class="logo-container">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Centro Médico" class="logo">
-        </div>
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Centro Médico" class="logo">
+            </div>
             <h1 class="titulo">Centro Médico</h1>
 
-            <form method="POST" action="/login">
+            {% with mensajes = get_flashed_messages() %}
+                {% if mensajes %}
+                <div style="color: red; font-weight: bolder;">
+                    {{ mensajes[0] }}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+
+            <form method="POST" action="{{ url_for('login') }}">
                 <label for="rfc">RFC</label>
                 <input type="text" id="rfc" name="rfc" placeholder="Introduce tu RFC" required>
 
@@ -26,4 +37,5 @@
         </div>
     </div>
 </body>
+
 </html>

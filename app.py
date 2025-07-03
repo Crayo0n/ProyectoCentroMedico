@@ -1,10 +1,48 @@
-from flask import Flask, render_template
-from flask import Flask, render_template, request, send_file, redirect, url_for
+from flask import Flask, render_template, request, send_file, redirect, url_for,jsonify, session, flash
+from flask_mysqldb import MySQL
+import MySQLdb
 
 app = Flask(__name__)
 
-@app.route('/')
+app.config['MYSQL_HOST']="localhost"
+app.config['MYSQL_USER']="root"
+app.config['MYSQL_PASSWORD']="U41578780o"
+app.config['MYSQL_DB']="ClinicaDB"
+app.secret_key='mysecretkey'
+
+mysql= MySQL(app)
+
+#Validación de Login
+@app.route('/', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        rfc = request.form['rfc']
+        password = request.form['password']
+
+        cur = mysql.connection.cursor()
+        cur.execute("select idmedico, nombrecompleto, contraseña, rol from medicos where rfc = %s", (rfc,))
+        medico = cur.fetchone()
+        cur.close()
+
+        if medico:
+            idmedico, nombre, contraseña_db, rol = medico
+            if password == contraseña_db:
+                # Guardamos datos del médico en la sesión
+                session['idmedico'] = idmedico
+                session['nombre'] = nombre
+                session['rol'] = rol
+
+                # Redirigir según rol
+                if rol == 'Admin':
+                    return redirect(url_for('doctores'))
+                else:
+                    return redirect(url_for('pacientes'))
+
+            else:
+                flash("Contraseña incorrecta")
+        else:
+            flash("RFC no registrado")
+
     return render_template('login.html')
 
 
