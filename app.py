@@ -3,14 +3,28 @@ from flask_mysqldb import MySQL
 import MySQLdb
 
 app = Flask(__name__)
-
-app.config['MYSQL_HOST']="localhost"
-app.config['MYSQL_USER']="root"
-app.config['MYSQL_PASSWORD']="U41578780o"
-app.config['MYSQL_DB']="ClinicaDB"
 app.secret_key='mysecretkey'
 
-mysql= MySQL(app)
+import pyodbc
+
+conn = pyodbc.connect(
+    r'DRIVER={ODBC Driver 18 for SQL Server};'
+    r'SERVER=localhost\SQLEXPRESS01;'
+    r'DATABASE=ClinicaDB;'
+    r'Trusted_Connection=yes;'
+    r'TrustServerCertificate=yes;'
+)
+
+cursor = conn.cursor()
+cursor.execute("SELECT GETDATE()")
+print(cursor.fetchone())
+
+
+@app.route('/Salir')
+def Salir():
+    session.clear()
+    return redirect(url_for('login'))  
+
 
 #Validación de Login
 @app.route('/', methods=['GET', 'POST'])
@@ -19,29 +33,27 @@ def login():
         rfc = request.form['rfc']
         password = request.form['password']
 
-        cur = mysql.connection.cursor()
-        cur.execute("select idmedico, nombrecompleto, contraseña, rol from medicos where rfc = %s", (rfc,))
-        medico = cur.fetchone()
-        cur.close()
+        cursor = conn.cursor()
+        cursor.execute("select idmedico, nombrecompleto, contraseña, rol from medicos where rfc = ?", (rfc,))
+        medico = cursor.fetchone()
 
         if medico:
-            idmedico, nombre, contraseña_db, rol = medico
+            idmedico, nombrecompleto, contraseña_db, rol = medico
             if password == contraseña_db:
-                # Guardamos datos del médico en la sesión
+                # Guardar datos en sesión
                 session['idmedico'] = idmedico
-                session['nombre'] = nombre
+                session['nombre'] = nombrecompleto
                 session['rol'] = rol
 
-                # Redirigir según rol
+                # Redirección según rol
                 if rol == 'Admin':
                     return redirect(url_for('doctores'))
                 else:
                     return redirect(url_for('pacientes'))
-
             else:
-                flash("Contraseña incorrecta")
+                flash('Contraseña incorrecta')
         else:
-            flash("RFC no registrado")
+            flash('RFC no registrado')
 
     return render_template('login.html')
 

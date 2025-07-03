@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Administración de Médicos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Medicos/medicos.css') }}">
 </head>
+
 <body>
     <div class="container">
         <!-- Barra lateral -->
         <aside class="sidebar">
-        <div class="logo-wrapper">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-        </div>
-            <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
-            <img src="{{ url_for('static', filename='img/doctores.png') }}" alt="Médicos" class="sidebar-icon">
-            <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
+            <div class="sidebar-top">
+                <div class="logo-wrapper">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+                </div>
+                <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
+                <img src="{{ url_for('static', filename='img/doctores.png') }}" alt="Médicos" class="sidebar-icon">
+            </div>
+
+
+            <div class="sidebar-bottom">
+                <a href="{{ url_for('Salir') }}">
+                    <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir"
+                        class="sidebar-iconSalir logout">
+                </a>
+
+            </div>
+
         </aside>
 
         <!-- Contenido principal -->
@@ -27,7 +40,8 @@
             <h3>Buscador</h3>
             <div class="buscador">
                 <input type="text" id="buscador" placeholder="Buscar médico...">
-               <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar"></button> 
+                <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}"
+                        alt="Buscar"></button>
             </div>
 
             <table>
@@ -60,4 +74,5 @@
         </main>
     </div>
 </body>
+
 </html>
