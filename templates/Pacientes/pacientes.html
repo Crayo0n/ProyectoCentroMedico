@@ -1,32 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Pacientes</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/pacientes.css') }}">
 </head>
+
 <body>
     <div class="container">
-       <!-- Barra lateral -->
+        <!-- Barra lateral -->
         <aside class="sidebar">
-        <div class="logo-wrapper">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-        </div>
-            <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
-            <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
+            <div class="sidebar-top">
+                <div class="logo-wrapper">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+                </div>
+                <a href="{{ url_for('pacientes') }}">
+                    <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
+                </a>
+                {% if session['rol'] == 'Admin' %}
+                <a href="{{ url_for('doctores') }}">
+                    <img src="{{ url_for('static', filename='img/doctores.png') }}" class="sidebar-icon" alt="Doctores">
+                </a>
+                {% endif %}
+            </div>
+
+
+            <div class="sidebar-bottom">
+                <a href="{{ url_for('Salir') }}">
+                    <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir"
+                        class="sidebar-iconSalir logout">
+                </a>
+
+            </div>
         </aside>
 
         <!-- Main content -->
         <main class="main">
             <header class="header">
                 <h1>Pacientes</h1>
-                <a href="/pacientes/agregar" class="btn-agregar">Agregar</a>
+                <a href="{{ url_for('pacientes_agregar') }}" class="btn-agregar">Agregar</a>
             </header>
 
             <h3>Buscador</h3>
             <div class="buscador">
                 <input type="text" id="buscador" placeholder="Buscar paciente...">
-               <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar"></button> 
+                <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}"
+                        alt="Buscar"></button>
             </div>
 
             <table>
@@ -49,7 +69,7 @@
                         <td>Hipertensión</td>
                         <td>Penicilina</td>
                         <td>
-                            <button class="btn-editar"><a href="/pacientes/editar" >Editar</a></button>
+                            <button class="btn-editar"><a href="/pacientes/editar">Editar</a></button>
                             <button class="btn-explorar"><a href="/pacientes/exploracion">Exploración</a></button>
                             <button class="btn-eliminar">Eliminar</button>
                         </td>
@@ -60,4 +80,5 @@
         </main>
     </div>
 </body>
+
 </html>

@@ -15,8 +15,14 @@
                 <div class="logo-wrapper">
                     <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
                 </div>
-                <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
-                <img src="{{ url_for('static', filename='img/doctores.png') }}" alt="Médicos" class="sidebar-icon">
+                <a href="{{ url_for('pacientes') }}">
+                    <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
+                </a>
+                {% if session['rol'] == 'Admin' %}
+                <a href="{{ url_for('doctores') }}">
+                    <img src="{{ url_for('static', filename='img/doctores.png') }}" class="sidebar-icon" alt="Doctores">
+                </a>
+                {% endif %}
             </div>
 
 
@@ -27,14 +33,13 @@
                 </a>
 
             </div>
-
         </aside>
 
         <!-- Contenido principal -->
         <main class="main">
             <header class="header">
                 <h1>Administración de Médicos</h1>
-                <button class="btn-agregar">Agregar</button>
+                <a href="{{ url_for('doctores_agregar') }}"><button class="btn-agregar">Agregar</button></a>
             </header>
 
             <h3>Buscador</h3>
@@ -64,7 +69,9 @@
                         <td>1234567</td>
                         <td>Administrador</td>
                         <td>
-                            <button class="btn-editar">Editar</button>
+                            <a href="/medicos/editar">
+                                <button class="btn-editar">Editar</button>
+                            </a>
                             <button class="btn-eliminar">Eliminar</button>
                         </td>
                     </tr>

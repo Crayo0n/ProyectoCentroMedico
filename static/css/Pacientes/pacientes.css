@@ -22,7 +22,8 @@ a {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 50px;
+    justify-content: space-between;  
+    height: 100vh;
 }
 
 .sidebar-icon {
@@ -49,6 +50,12 @@ a {
     align-items: center;
 }
 
+.sidebar-bottom,.sidebar-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
 
 .sidebar-iconSalir {
     width: 70px;
@@ -64,6 +71,7 @@ a {
 .logout {
     margin-top: auto;
 }
+
 
 /* Main content */
 .main {

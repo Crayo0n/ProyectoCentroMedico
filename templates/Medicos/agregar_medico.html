@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Agregar médico</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Medicos/AgregarEditarMedico.css') }}">
 </head>
+
 <body>
     <div class="container">
         <aside class="sidebar">
-        <div class="logo-wrapper">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-        </div>
+            <div class="logo-wrapper">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+            </div>
         </aside>
 
         <div class="form-container">
-                <h1>Agregar médico</h1>
-            
+            <h1>Agregar médico</h1>
+
             <div class="form-box">
                 <form method="POST" action="/admin/agregar">
                     <label for="rfc">RFC:</label>
@@ -42,11 +44,13 @@
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Guardar</button>
-                        <a href="/admin/doctores" class="cancelar">Cancelar</a>
+                            <a href="{{ url_for('doctores') }}" class="cancelar">Cancelar</a>
+                        
                     </div>
                 </form>
-            </div>    
+            </div>
         </div>
     </div>
 </body>
+
 </html>
