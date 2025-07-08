@@ -13,20 +13,23 @@
             <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
         </div>
             <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
-            <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
+            {# MODIFICACIÓN: La imagen de Cerrar Sesión ahora es un enlace a la ruta Salir #}
+            <a href="{{ url_for('Salir') }}">
+                <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
+            </a>
         </aside>
 
         <!-- Main content -->
         <main class="main">
             <header class="header">
                 <h1>Pacientes</h1>
-                <a href="/pacientes/agregar" class="btn-agregar">Agregar</a>
+                <a href="{{ url_for('pacientes_agregar') }}" class="btn-agregar">Agregar</a>
             </header>
 
             <h3>Buscador</h3>
             <div class="buscador">
                 <input type="text" id="buscador" placeholder="Buscar paciente...">
-               <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar"></button> 
+               <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar"></button>
             </div>
 
             <table>
@@ -41,18 +44,24 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for _ in range(5) %}
+                    {# Itera sobre la lista de pacientes proporcionada por la ruta de Flask #}
+                    {% for paciente in pacientes %}
                     <tr>
-                        <td>1</td>
-                        <td>Juan Pérez</td>
-                        <td>1990-05-10</td>
-                        <td>Hipertensión</td>
-                        <td>Penicilina</td>
+                        <td>{{ paciente.idpaciente }}</td>
+                        <td>{{ paciente.nombrecompleto }}</td>
+                        <td>{{ paciente.fechanacimiento }}</td>
+                        {# Muestra 'N/A' si el campo es nulo o vacío #}
+                        <td>{{ paciente.enfermedadescronicas if paciente.enfermedadescronicas else 'N/A' }}</td>
+                        <td>{{ paciente.alergias if paciente.alergias else 'N/A' }}</td>
                         <td>
-                            <button class="btn-editar"><a href="/pacientes/editar" >Editar</a></button>
-                            <button class="btn-explorar"><a href="/pacientes/exploracion">Exploración</a></button>
+                            <button class="btn-editar"><a href="/pacientes/editar/{{ paciente.idpaciente }}" >Editar</a></button>
+                            <button class="btn-explorar"><a href="/pacientes/exploracion/{{ paciente.idpaciente }}">Exploración</a></button>
                             <button class="btn-eliminar">Eliminar</button>
                         </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No hay pacientes asignados a este médico.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
