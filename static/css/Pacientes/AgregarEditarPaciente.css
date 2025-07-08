@@ -63,6 +63,30 @@ body {
     align-items: center;      
 }
 
+/* Estilos para los mensajes flash */
+.flash-messages {
+    margin: 20px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.flash {
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.flash.success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.flash.error {
+    background-color: #f44336;
+    color: white;
+}
+
 
 .form-box {
     width: 100%;

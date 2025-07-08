@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <title>Administración de Médicos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Medicos/medicos.css') }}">
+    <script>
+        // Función para confirmar eliminación
+        function confirmarEliminacion(event) {
+            if (!confirm("¿Estás seguro de que quieres eliminar este médico?")) {
+                event.preventDefault();  // Cancelar la eliminación si el usuario no confirma
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -25,13 +33,11 @@
                 {% endif %}
             </div>
 
-
             <div class="sidebar-bottom">
                 <a href="{{ url_for('Salir') }}">
                     <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir"
                         class="sidebar-iconSalir logout">
                 </a>
-
             </div>
         </aside>
 
@@ -42,17 +48,23 @@
                 <a href="{{ url_for('doctores_agregar') }}"><button class="btn-agregar">Agregar</button></a>
             </header>
 
+            <!-- Buscador -->
             <h3>Buscador</h3>
             <div class="buscador">
-                <input type="text" id="buscador" placeholder="Buscar médico...">
-                <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}"
-                        alt="Buscar"></button>
+                <form method="GET" action="{{ url_for('doctores') }}">
+                    <input type="text" id="buscador" name="search" placeholder="Buscar médico..." value="{{ request.args.get('search') }}">
+                    <button class="btn-buscar" type="submit">
+                        <img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar">
+                    </button>
+                </form>
             </div>
 
+            <!-- Tabla de Médicos -->
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Nombre</th>
                         <th>RFC</th>
                         <th>Correo</th>
                         <th>Cédula Profesional</th>
@@ -61,19 +73,27 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for _ in range(5) %}
+                    {% for medico in medicos %}
                     <tr>
-                        <td>1</td>
-                        <td>ABCD010203XYZ</td>
-                        <td>correo@ejemplo.com</td>
-                        <td>1234567</td>
-                        <td>Administrador</td>
+                        <td>{{ medico.idmedico }}</td>
+                        <td>{{medico.nombrecompleto}}</td>
+                        <td>{{ medico.rfc }}</td>
+                        <td>{{ medico.correo }}</td>
+                        <td>{{ medico.cedulaprofesional }}</td>
+                        <td>{{ medico.rol }}</td>
                         <td>
-                            <a href="/medicos/editar">
+                            <a href="{{ url_for('medicos_editar', medico_id=medico.idmedico) }}">
                                 <button class="btn-editar">Editar</button>
                             </a>
-                            <button class="btn-eliminar">Eliminar</button>
+                            <!-- Agregamos el evento de confirmación de eliminación -->
+                            <form action="{{ url_for('medicos_eliminar', medico_id=medico.idmedico) }}" method="POST" style="display:inline;" onsubmit="confirmarEliminacion(event)">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
                         </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No se encontraron médicos.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -83,3 +103,4 @@
 </body>
 
 </html>
+

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Agregar paciente</title>
@@ -10,41 +11,56 @@
     <div class="container">
         <!-- Barra lateral -->
         <aside class="sidebar">
-        <div class="logo-wrapper">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-        </div>
+            <div class="logo-wrapper">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+            </div>
         </aside>
 
+        <!-- Contenido principal -->
         <div class="form-container">
             <h1>Agregar paciente</h1>
-            
-            <div class="form-box">    
-                <form method="POST" action="/admin/pacientes/editar">
-                    <label for="nombre">Nombre completo:</label>
-                    <input type="text" id="nombre" name="nombre" required>
+            <div class="form-box">
 
-                    <label for="medico">Médico que atiende:</label>
-                    <input type="text" id="medico" name="medico" required>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
 
-                    <label for="fecha_nacimiento">Fecha de nacimiento:</label>
-                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                <form method="POST" action="{{ url_for('pacientes_agregar') }}">
+                    <!-- Nombre completo -->
+                    <label for="nombrecompleto">Nombre completo:</label>
+                    <input type="text" id="nombrecompleto" name="nombrecompleto" >
 
-                    <label for="enfermedades">Enfermedades crónicas:</label>
-                    <input type="text" id="enfermedades" name="enfermedades" placeholder="(Opcional)">
+                    <!-- Fecha de nacimiento -->
+                    <label for="fechanacimiento">Fecha de nacimiento:</label>
+                    <input type="date" id="fechanacimiento" name="fechanacimiento" >
 
+                    <!-- Enfermedades crónicas -->
+                    <label for="enfermedadescronicas">Enfermedades crónicas:</label>
+                    <textarea id="enfermedadescronicas" name="enfermedadescronicas"></textarea>
+
+                    <!-- Alergias -->
                     <label for="alergias">Alergias:</label>
-                    <input type="text" id="alergias" name="alergias" placeholder="(Opcional)">
+                    <textarea id="alergias" name="alergias"></textarea>
 
-                    <label for="antecedentes">Antecedentes familiares:</label>
-                    <input type="text" id="antecedentes" name="antecedentes" placeholder="(Opcional)">
+                    <!-- Antecedentes familiares -->
+                    <label for="antecedentesfam">Antecedentes familiares:</label>
+                    <textarea id="antecedentesfam" name="antecedentesfam"></textarea>
 
+                    <!-- Botones -->
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Guardar</button>
-                        <a href="/pacientes" class="cancelar">Cancelar</a>
+                        <a href="{{ url_for('pacientes') }}" class="cancelar">Cancelar</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </body>
+
 </html>

@@ -25,7 +25,6 @@
                 {% endif %}
             </div>
 
-
             <div class="sidebar-bottom">
                 <a href="{{ url_for('Salir') }}">
                     <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir"
@@ -39,6 +38,17 @@
         <main class="main">
             <header class="header">
                 <h1>Pacientes</h1>
+                <!-- Mostrar mensajes de flash -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
                 <a href="{{ url_for('pacientes_agregar') }}" class="btn-agregar">Agregar</a>
             </header>
 
@@ -48,6 +58,7 @@
                 <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}"
                         alt="Buscar"></button>
             </div>
+
 
             <table>
                 <thead>
@@ -61,18 +72,32 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for _ in range(5) %}
+                    {% for paciente in pacientes %}
                     <tr>
-                        <td>1</td>
-                        <td>Juan Pérez</td>
-                        <td>1990-05-10</td>
-                        <td>Hipertensión</td>
-                        <td>Penicilina</td>
+                        <td>{{ paciente.idpaciente }}</td>
+                        <td>{{ paciente.nombrecompleto }}</td>
+                        <td>{{ paciente.fechanacimiento }}</td>
+                        <td>{{ paciente.enfermedadescronicas }}</td>
+                        <td>{{ paciente.alergias }}</td>
                         <td>
-                            <button class="btn-editar"><a href="/pacientes/editar">Editar</a></button>
-                            <button class="btn-explorar"><a href="/pacientes/exploracion">Exploración</a></button>
-                            <button class="btn-eliminar">Eliminar</button>
+                            <!-- Corregido el URL para que pase el paciente_id -->
+                            <a href="{{ url_for('pacientes_editar', paciente_id=paciente.idpaciente) }}">
+                                <button class="btn-editar">Editar</button>
+                            </a>
+                            <a href="{{ url_for('pacientes_exploracion', paciente_id=paciente.idpaciente) }}">
+                                <button class="btn-explorar">Exploración</button>
+                            </a>
+                            <form method="POST"
+                                action="{{ url_for('pacientes_eliminar', paciente_id=paciente.idpaciente) }}"
+                                style="display:inline;">
+                                <button type="submit" class="btn-eliminar"
+                                    onclick="return confirm('¿Estás seguro de que deseas eliminar este paciente?')">Eliminar</button>
+                            </form>
                         </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No se encontraron pacientes.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -5,42 +5,43 @@
     <title>Editar paciente</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/AgregarEditarPaciente.css') }}">
 </head>
-
 <body>
     <div class="container">
         <!-- Barra lateral -->
         <aside class="sidebar">
-        <div class="logo-wrapper">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-        </div>
+            <div class="logo-wrapper">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+            </div>
         </aside>
 
         <div class="form-container">
             <h1>Editar paciente</h1>
-            
+
             <div class="form-box">    
-                <form method="POST" action="/admin/pacientes/editar">
+                <form method="POST" action="{{ url_for('pacientes_editar', paciente_id=paciente['idpaciente']) }}">
+                    <!-- Nombre completo -->
                     <label for="nombre">Nombre completo:</label>
-                    <input type="text" id="nombre" name="nombre" required>
+                    <input type="text" id="nombre" name="nombre" value="{{ paciente['nombrecompleto'] }}" required>
 
-                    <label for="medico">Médico que atiende:</label>
-                    <input type="text" id="medico" name="medico" required>
-
+                    <!-- Fecha de nacimiento -->
                     <label for="fecha_nacimiento">Fecha de nacimiento:</label>
-                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ paciente['fechanacimiento'] }}" required>
 
+                    <!-- Enfermedades crónicas -->
                     <label for="enfermedades">Enfermedades crónicas:</label>
-                    <input type="text" id="enfermedades" name="enfermedades" placeholder="(Opcional)">
+                    <input type="text" id="enfermedades" name="enfermedades" value="{{ paciente['enfermedadescronicas'] }}" placeholder="(Opcional)">
 
+                    <!-- Alergias -->
                     <label for="alergias">Alergias:</label>
-                    <input type="text" id="alergias" name="alergias" placeholder="(Opcional)">
+                    <input type="text" id="alergias" name="alergias" value="{{ paciente['alergias'] }}" placeholder="(Opcional)">
 
+                    <!-- Antecedentes familiares -->
                     <label for="antecedentes">Antecedentes familiares:</label>
-                    <input type="text" id="antecedentes" name="antecedentes" placeholder="(Opcional)">
+                    <input type="text" id="antecedentes" name="antecedentes" value="{{ paciente['antecedentesfam'] }}" placeholder="(Opcional)">
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Actualizar</button>
-                        <a href="/pacientes" class="cancelar">Cancelar</a>
+                        <a href="{{ url_for('pacientes') }}" class="cancelar">Cancelar</a>
                     </div>
                 </form>
             </div>
