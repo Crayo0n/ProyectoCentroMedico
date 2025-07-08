@@ -34,11 +34,11 @@
                 <form method="POST" action="{{ url_for('pacientes_agregar') }}">
                     <!-- Nombre completo -->
                     <label for="nombrecompleto">Nombre completo:</label>
-                    <input type="text" id="nombrecompleto" name="nombrecompleto" >
+                    <input type="text" id="nombrecompleto" name="nombrecompleto" required>
 
                     <!-- Fecha de nacimiento -->
                     <label for="fechanacimiento">Fecha de nacimiento:</label>
-                    <input type="date" id="fechanacimiento" name="fechanacimiento" >
+                    <input type="date" id="fechanacimiento" name="fechanacimiento" required>
 
                     <!-- Enfermedades crónicas -->
                     <label for="enfermedadescronicas">Enfermedades crónicas:</label>
@@ -58,6 +58,7 @@
                         <a href="{{ url_for('pacientes') }}" class="cancelar">Cancelar</a>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>

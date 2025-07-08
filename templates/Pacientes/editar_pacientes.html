@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Editar paciente</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/AgregarEditarPaciente.css') }}">
 </head>
+
 <body>
     <div class="container">
         <!-- Barra lateral -->
@@ -17,27 +19,31 @@
         <div class="form-container">
             <h1>Editar paciente</h1>
 
-            <div class="form-box">    
-                <form method="POST" action="{{ url_for('pacientes_editar', paciente_id=paciente['idpaciente']) }}">
+            <div class="form-box">
+                <form method="POST" action="{{ url_for('pacientes_editar', paciente_id=paciente.idpaciente) }}">
                     <!-- Nombre completo -->
                     <label for="nombre">Nombre completo:</label>
                     <input type="text" id="nombre" name="nombre" value="{{ paciente['nombrecompleto'] }}" required>
 
                     <!-- Fecha de nacimiento -->
                     <label for="fecha_nacimiento">Fecha de nacimiento:</label>
-                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ paciente['fechanacimiento'] }}" required>
+                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento"
+                        value="{{ paciente['fechanacimiento'] }}" required>
 
                     <!-- Enfermedades crónicas -->
                     <label for="enfermedades">Enfermedades crónicas:</label>
-                    <input type="text" id="enfermedades" name="enfermedades" value="{{ paciente['enfermedadescronicas'] }}" placeholder="(Opcional)">
+                    <input type="text" id="enfermedades" name="enfermedades"
+                        value="{{ paciente['enfermedadescronicas'] }}" placeholder="(Opcional)">
 
                     <!-- Alergias -->
                     <label for="alergias">Alergias:</label>
-                    <input type="text" id="alergias" name="alergias" value="{{ paciente['alergias'] }}" placeholder="(Opcional)">
+                    <input type="text" id="alergias" name="alergias" value="{{ paciente['alergias'] }}"
+                        placeholder="(Opcional)">
 
                     <!-- Antecedentes familiares -->
                     <label for="antecedentes">Antecedentes familiares:</label>
-                    <input type="text" id="antecedentes" name="antecedentes" value="{{ paciente['antecedentesfam'] }}" placeholder="(Opcional)">
+                    <input type="text" id="antecedentes" name="antecedentes" value="{{ paciente['antecedentesfam'] }}"
+                        placeholder="(Opcional)">
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Actualizar</button>
@@ -48,4 +54,5 @@
         </div>
     </div>
 </body>
+
 </html>

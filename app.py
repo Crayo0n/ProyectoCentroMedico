@@ -146,10 +146,12 @@ def doctores_agregar():
 # Ruta para editar médicos
 @app.route('/medicos/editar/<int:medico_id>', methods=['GET', 'POST'])
 def medicos_editar(medico_id):
+    # Verifica que solo los administradores puedan acceder
     if session.get('rol') != 'Admin':
         flash("Acceso denegado. Solo los administradores pueden editar médicos.")
         return redirect(url_for('login'))
 
+    # Obtener el médico a editar
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("""
         SELECT idmedico, rfc, nombrecompleto, cedulaprofesional, correo, contrasena, idrol, status
@@ -159,33 +161,50 @@ def medicos_editar(medico_id):
     medico = cursor.fetchone()
 
     if not medico:
-        flash("Médico no encontrado.")
+        flash("Médico no encontrado.", 'error')
         return redirect(url_for('doctores'))
 
     if request.method == 'POST':
+        # Recibir los datos del formulario
         rfc = request.form['rfc']
         nombrecompleto = request.form['nombrecompleto']
         cedula = request.form['cedula']
         correo = request.form['correo']
         contrasena = request.form['password']
-        idrol = request.form['rol']
+        rol_id = request.form['rol']  # Obtiene el idrol directamente desde el formulario
+
+        # Validar que los datos no estén vacíos
+        if not rfc or not nombrecompleto or not cedula or not correo or not contrasena or not rol_id:
+            flash("Todos los campos son obligatorios.", 'error')
+            return redirect(url_for('medicos_editar', medico_id=medico_id))
 
         try:
+            # Ejecutar la actualización en la base de datos
             cursor.execute("""
                 UPDATE medicos
                 SET rfc = %s, nombrecompleto = %s, cedulaprofesional = %s, correo = %s, contrasena = %s, idrol = %s
                 WHERE idmedico = %s
-            """, (rfc, nombrecompleto, cedula, correo, contrasena, idrol, medico_id))
+            """, (rfc, nombrecompleto, cedula, correo, contrasena, rol_id, medico_id))
+
             mysql.connection.commit()
-            flash("Médico actualizado correctamente", 'success')  # Mensaje de éxito
-            return redirect(url_for('doctores'))
+
+            # Verificar si se actualizó algún registro
+            if cursor.rowcount == 0:
+                flash("No se realizaron cambios. El médico ya tiene estos valores.", 'info')
+            else:
+                flash("Médico actualizado correctamente", 'success')
+
+            return redirect(url_for('doctores'))  # Redirigir al listado de médicos
         except MySQLdb.MySQLError as e:
             mysql.connection.rollback()
-            flash(f"Error al actualizar médico: {e}", 'error')  # Error
+            flash(f"Error al actualizar médico: {e}", 'error')
         finally:
             cursor.close()
 
+    # Si no es un método POST, renderiza el formulario con los datos del médico
     return render_template('Medicos/editar_medico.html', medico=medico)
+
+
 
 
 # Ruta para eliminar médicos 
@@ -243,21 +262,20 @@ def pacientes_agregar():
     if request.method == 'POST':
         idmedico = session.get('idmedico')  
         nombrecompleto = request.form['nombrecompleto']
-        fechanacimiento = request.form['fechanacimiento']
+        fechanacimiento = request.form['fechanacimiento']  # Asegúrate de usar fechanacimiento
         enfermedades = request.form['enfermedadescronicas']
         alergias = request.form['alergias']
         antecedentes = request.form['antecedentesfam']
 
         try:
-            
-             # Validaciones en el backend
-            if not nombrecompleto or not idmedico or not fecha_nacimiento:
+            # Validaciones en el backend
+            if not nombrecompleto or not idmedico or not fechanacimiento:  # Cambié fecha_nacimiento a fechanacimiento
                 flash('Los campos nombre, médico y fecha de nacimiento son obligatorios.', 'error')
                 return redirect(url_for('pacientes_agregar'))
 
             # Validación de la fecha de nacimiento (debe ser una fecha válida)
             try:
-                fecha_nacimiento = datetime.strptime(fecha_nacimiento, '%Y-%m-%d').date()
+                fechanacimiento = datetime.strptime(fechanacimiento, '%Y-%m-%d').date()  # Usamos fechanacimiento aquí también
             except ValueError:
                 flash('La fecha de nacimiento debe ser una fecha válida.', 'error')
                 return redirect(url_for('pacientes_agregar'))
@@ -276,6 +294,7 @@ def pacientes_agregar():
             cursor.close()
 
     return render_template('Pacientes/agregar_pacientes.html')
+
 
 # Editar paciente
 @app.route('/pacientes/editar/<int:paciente_id>', methods=['GET', 'POST'])
@@ -299,13 +318,24 @@ def pacientes_editar(paciente_id):
         alergias = request.form['alergias']
         antecedentes = request.form['antecedentes']
 
-        cursor.execute("""
-            UPDATE pacientes
-            SET nombrecompleto = %s, fechanacimiento = %s, enfermedadescronicas = %s, alergias = %s, antecedentesfam = %s
-            WHERE idpaciente = %s
-        """, (nombrecompleto, fechanacimiento, enfermedades, alergias, antecedentes, paciente_id))
-        mysql.connection.commit()
-        flash("Paciente actualizado correctamente", 'success')
+        # Verificamos que los campos no estén vacíos
+        if not nombrecompleto or not fechanacimiento:
+            flash('El nombre completo y la fecha de nacimiento son obligatorios.', 'error')
+            return redirect(url_for('pacientes_editar', paciente_id=paciente_id))
+
+        # Actualización en la base de datos
+        try:
+            cursor.execute("""
+                UPDATE pacientes
+                SET nombrecompleto = %s, fechanacimiento = %s, enfermedadescronicas = %s, alergias = %s, antecedentesfam = %s
+                WHERE idpaciente = %s
+            """, (nombrecompleto, fechanacimiento, enfermedades, alergias, antecedentes, paciente_id))
+            mysql.connection.commit()
+            flash("Paciente actualizado correctamente", 'success')
+        except MySQLdb.MySQLError as e:
+            mysql.connection.rollback()
+            flash(f"Error al actualizar paciente: {e}", 'error')
+
         cursor.close()
         return redirect(url_for('pacientes'))
 
