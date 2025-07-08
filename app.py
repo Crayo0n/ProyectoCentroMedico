@@ -136,7 +136,7 @@ def doctores_agregar():
             flash(f"Error: Entrada duplicada para RFC, Cédula Profesional o Correo. Verifique los datos. ({e})", 'error')  # Error
         except MySQLdb.MySQLError as e:
             mysql.connection.rollback()
-            flash(f"Error al agregar médico: {e}", 'error')  # Error
+            flash(f"Error al agregar médico: {e}", 'error')  
         finally:
             cursor.close()
 
@@ -146,7 +146,7 @@ def doctores_agregar():
 # Ruta para editar médicos
 @app.route('/medicos/editar/<int:medico_id>', methods=['GET', 'POST'])
 def medicos_editar(medico_id):
-    # Verifica que solo los administradores puedan acceder
+    
     if session.get('rol') != 'Admin':
         flash("Acceso denegado. Solo los administradores pueden editar médicos.")
         return redirect(url_for('login'))
@@ -171,7 +171,7 @@ def medicos_editar(medico_id):
         cedula = request.form['cedula']
         correo = request.form['correo']
         contrasena = request.form['password']
-        rol_id = request.form['rol']  # Obtiene el idrol directamente desde el formulario
+        rol_id = request.form['rol']
 
         # Validar que los datos no estén vacíos
         if not rfc or not nombrecompleto or not cedula or not correo or not contrasena or not rol_id:
@@ -179,7 +179,7 @@ def medicos_editar(medico_id):
             return redirect(url_for('medicos_editar', medico_id=medico_id))
 
         try:
-            # Ejecutar la actualización en la base de datos
+            # Se ejecuta la actualización en la base de datos
             cursor.execute("""
                 UPDATE medicos
                 SET rfc = %s, nombrecompleto = %s, cedulaprofesional = %s, correo = %s, contrasena = %s, idrol = %s
@@ -194,14 +194,13 @@ def medicos_editar(medico_id):
             else:
                 flash("Médico actualizado correctamente", 'success')
 
-            return redirect(url_for('doctores'))  # Redirigir al listado de médicos
+            return redirect(url_for('doctores')) 
         except MySQLdb.MySQLError as e:
             mysql.connection.rollback()
             flash(f"Error al actualizar médico: {e}", 'error')
         finally:
             cursor.close()
 
-    # Si no es un método POST, renderiza el formulario con los datos del médico
     return render_template('Medicos/editar_medico.html', medico=medico)
 
 
@@ -238,7 +237,7 @@ def medicos_eliminar(medico_id):
 # Módulo de Pacientes
 @app.route('/pacientes')
 def pacientes():
-    idmedico = session.get('idmedico')  # Obtener el ID del médico de la sesión
+    idmedico = session.get('idmedico') 
     if not idmedico:
         flash("Error: No se pudo identificar al médico. Por favor, inicie sesión.")
         return redirect(url_for('login'))
@@ -262,20 +261,18 @@ def pacientes_agregar():
     if request.method == 'POST':
         idmedico = session.get('idmedico')  
         nombrecompleto = request.form['nombrecompleto']
-        fechanacimiento = request.form['fechanacimiento']  # Asegúrate de usar fechanacimiento
+        fechanacimiento = request.form['fechanacimiento']  
         enfermedades = request.form['enfermedadescronicas']
         alergias = request.form['alergias']
         antecedentes = request.form['antecedentesfam']
 
         try:
-            # Validaciones en el backend
-            if not nombrecompleto or not idmedico or not fechanacimiento:  # Cambié fecha_nacimiento a fechanacimiento
+            if not nombrecompleto or not idmedico or not fechanacimiento: 
                 flash('Los campos nombre, médico y fecha de nacimiento son obligatorios.', 'error')
                 return redirect(url_for('pacientes_agregar'))
 
-            # Validación de la fecha de nacimiento (debe ser una fecha válida)
             try:
-                fechanacimiento = datetime.strptime(fechanacimiento, '%Y-%m-%d').date()  # Usamos fechanacimiento aquí también
+                fechanacimiento = datetime.strptime(fechanacimiento, '%Y-%m-%d').date()  
             except ValueError:
                 flash('La fecha de nacimiento debe ser una fecha válida.', 'error')
                 return redirect(url_for('pacientes_agregar'))
@@ -285,11 +282,11 @@ def pacientes_agregar():
                 VALUES (%s, %s, %s, %s, %s, %s, 1)
             """, (idmedico, nombrecompleto, fechanacimiento, enfermedades, alergias, antecedentes))
             mysql.connection.commit()
-            flash("Paciente agregado correctamente", 'success')  # Mensaje de éxito
+            flash("Paciente agregado correctamente", 'success')  
             return redirect(url_for('pacientes'))
         except MySQLdb.MySQLError as e:
             mysql.connection.rollback()
-            flash(f"Error de base de datos al agregar paciente: {e}", 'error')  # Mensaje de error
+            flash(f"Error de base de datos al agregar paciente: {e}", 'error')  
         finally:
             cursor.close()
 
@@ -318,7 +315,6 @@ def pacientes_editar(paciente_id):
         alergias = request.form['alergias']
         antecedentes = request.form['antecedentes']
 
-        # Verificamos que los campos no estén vacíos
         if not nombrecompleto or not fechanacimiento:
             flash('El nombre completo y la fecha de nacimiento son obligatorios.', 'error')
             return redirect(url_for('pacientes_editar', paciente_id=paciente_id))
@@ -343,10 +339,10 @@ def pacientes_editar(paciente_id):
     return render_template('Pacientes/editar_pacientes.html', paciente=paciente)
 
 
-# Eliminar paciente (eliminación lógica)
+# Eliminar paciente 
 @app.route('/pacientes/eliminar/<int:paciente_id>', methods=['POST'])
 def pacientes_eliminar(paciente_id):
-    # Solo los administradores pueden eliminar pacientes
+    # Revisa el rol de admin
     if session.get('rol') != 'Admin':
         flash("Acceso denegado. Solo los administradores pueden eliminar pacientes.")
         return redirect(url_for('login'))
@@ -388,7 +384,6 @@ def pacientes_exploracion(paciente_id):
         return redirect(url_for('pacientes'))
 
     if request.method == 'POST':
-        # Aquí se pueden agregar más acciones para la exploración, si es necesario
         pass
 
     return render_template('Pacientes/exploracion_paciente.html', paciente=paciente)
