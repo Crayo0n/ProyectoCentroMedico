@@ -7,6 +7,7 @@ from reportlab.lib.pagesizes import letter
 
 app = Flask(__name__)
 
+
 # Configuración MySQL
 app.config['MYSQL_HOST'] = "localhost"
 app.config['MYSQL_USER'] = "root"
@@ -15,6 +16,30 @@ app.config['MYSQL_DB'] = "Clinica_DB"
 app.secret_key = 'mysecretkey'
 
 mysql = MySQL(app)
+
+app.secret_key='mysecretkey'
+
+import pyodbc
+
+conn = pyodbc.connect(
+    r'DRIVER={ODBC Driver 18 for SQL Server};'
+    r'SERVER=localhost\SQLEXPRESS01;'
+    r'DATABASE=ClinicaDB;'
+    r'Trusted_Connection=yes;'
+    r'TrustServerCertificate=yes;'
+)
+
+cursor = conn.cursor()
+cursor.execute("SELECT GETDATE()")
+print(cursor.fetchone())
+
+
+@app.route('/Salir')
+def Salir():
+    session.clear()
+    return redirect(url_for('login'))  
+
+
 
 # IMPORTANTE: Para implementar la eliminación lógica de pacientes, si aún no lo has hecho,
 # ejecuta la siguiente consulta SQL en tu base de datos:
@@ -54,6 +79,7 @@ def login():
         rfc = request.form['rfc']
         password = request.form['password']
 
+
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute("""
             SELECT m.idmedico, m.nombrecompleto, m.contrasena, r.nombre
@@ -71,13 +97,33 @@ def login():
                 session['rol'] = medico['nombre']
 
                 if medico['nombre'] == 'Admin':
+
+        cursor = conn.cursor()
+        cursor.execute("select idmedico, nombrecompleto, contraseña, rol from medicos where rfc = ?", (rfc,))
+        medico = cursor.fetchone()
+
+        if medico:
+            idmedico, nombrecompleto, contraseña_db, rol = medico
+            if password == contraseña_db:
+                # Guardar datos en sesión
+                session['idmedico'] = idmedico
+                session['nombre'] = nombrecompleto
+                session['rol'] = rol
+
+                # Redirección según rol
+                if rol == 'Admin':
+
                     return redirect(url_for('doctores'))
                 else:
                     return redirect(url_for('pacientes'))
             else:
                 flash('Contraseña incorrecta')
         else:
+
             flash('RFC no registrado o inactivo')
+
+            flash('RFC no registrado')
+
 
     return render_template('login.html')
 

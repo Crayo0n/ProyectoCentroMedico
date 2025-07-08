@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Agregar médico</title>
@@ -18,6 +19,7 @@
         <div class="form-container">
             <h1>Agregar médico</h1>
 
+
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <ul>
@@ -28,6 +30,7 @@
                 </ul>
             {% endif %}
             {% endwith %}
+
 
             <div class="form-box">
                 <form method="POST" action="{{ url_for('doctores_agregar') }}">
@@ -56,11 +59,16 @@
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Guardar</button>
+
                         <a href="{{ url_for('doctores') }}" class="cancelar">Cancelar</a>
+
+                            <a href="{{ url_for('doctores') }}" class="cancelar">Cancelar</a>
+                        
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </body>
+
 </html>

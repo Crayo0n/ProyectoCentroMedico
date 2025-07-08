@@ -13,6 +13,12 @@
             <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
         </div>
             <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
+            {% if session['rol'] == 'Admin' %}
+                <a href="{{ url_for('doctores') }}">
+                    <img src="{{ url_for('static', filename='img/doctores.png') }}" class="sidebar-icon" alt="Doctores">
+                </a>
+                {% endif %}
+            
             <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
         </aside>
 
