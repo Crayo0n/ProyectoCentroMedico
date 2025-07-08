@@ -60,7 +60,7 @@
 
                     <!-- Rol -->
                     <label for="rol">Rol:</label>
-                    <select id="rol" name="rol" required>
+                    <select id="rol" name="rol" >
                         <option value="3" {{ 'selected' if medico and medico.idrol == 3 else '' }}>Administrador</option>
                         <option value="1" {{ 'selected' if medico and medico.idrol == 1 else '' }}>Médico general</option>
                     </select>
