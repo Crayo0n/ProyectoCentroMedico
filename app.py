@@ -221,7 +221,7 @@ def medicos_eliminar(medico_id):
         if medico_existente:
             cursor.execute("UPDATE medicos SET status = 0 WHERE idmedico = %s", (medico_id,))
             mysql.connection.commit()
-            flash("Médico eliminado lógicamente (desactivado) correctamente.", 'success')
+            flash("Médico eliminado correctamente.", 'success')
         else:
             flash("Error: Médico no encontrado o ya estaba inactivo.", 'error')
     except MySQLdb.MySQLError as e:

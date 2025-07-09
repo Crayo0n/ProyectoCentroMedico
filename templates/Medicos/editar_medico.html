@@ -33,13 +33,13 @@
                     <input type="email" id="correo" name="correo" value="{{ medico.correo }}">
 
                     <label for="password">Contraseña:</label>
-                    <input type="password" id="password" name="password" value="{{ medico.contrasena }}" >
+                    <input type="password" id="password" name="password" value="{{ medico.contrasena }}">
 
                     <label for="rol">Rol:</label>
-                    <select id="rol" name="rol" >
+                    <select id="rol" name="rol">
                         <!-- Usar el idrol del rol -->
-                        <option value="1" {% if medico.idrol==3 %}selected{% endif %}>Administrador</option>
-                        <option value="2" {% if medico.idrol==1 %}selected{% endif %}>Médico general</option>
+                        <option value="3" {% if medico.idrol==3 %}selected{% endif %}>Administrador</option>
+                        <option value="1" {% if medico.idrol==1 %}selected{% endif %}>Médico general</option>
                     </select>
 
                     <div class="form-buttons">

@@ -5,14 +5,6 @@
     <meta charset="UTF-8">
     <title>Administración de Médicos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Medicos/medicos.css') }}">
-    <script>
-        // Función para confirmar eliminación
-        function confirmarEliminacion(event) {
-            if (!confirm("¿Estás seguro de que quieres eliminar este médico?")) {
-                event.preventDefault();  // Cancelar la eliminación si el usuario no confirma
-            }
-        }
-    </script>
 </head>
 
 <body>
@@ -45,6 +37,16 @@
         <main class="main">
             <header class="header">
                 <h1>Administración de Médicos</h1>
+                <!-- Mostrar mensajes de flash -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
                 <a href="{{ url_for('doctores_agregar') }}"><button class="btn-agregar">Agregar</button></a>
             </header>
 
@@ -52,7 +54,8 @@
             <h3>Buscador</h3>
             <div class="buscador">
                 <form method="GET" action="{{ url_for('doctores') }}">
-                    <input type="text" id="buscador" name="search" placeholder="Buscar médico..." value="{{ request.args.get('search') }}">
+                    <input type="text" id="buscador" name="search" placeholder="Buscar médico..."
+                        value="{{ request.args.get('search') }}">
                     <button class="btn-buscar" type="submit">
                         <img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar">
                     </button>
@@ -85,10 +88,12 @@
                             <a href="{{ url_for('medicos_editar', medico_id=medico.idmedico) }}">
                                 <button class="btn-editar">Editar</button>
                             </a>
-                            <!-- Agregamos el evento de confirmación de eliminación -->
-                            <form action="{{ url_for('medicos_eliminar', medico_id=medico.idmedico) }}" method="POST" style="display:inline;" onsubmit="confirmarEliminacion(event)">
-                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            <form method="POST" action="{{ url_for('medicos_eliminar', medico_id=medico.idmedico) }}"
+                                style="display:inline;">
+                                <button type="submit" class="btn-eliminar"
+                                    onclick="return confirm('¿Estás seguro de que deseas eliminar este médico?')">Eliminar</button>
                             </form>
+
                         </td>
                     </tr>
                     {% else %}
@@ -103,4 +108,3 @@
 </body>
 
 </html>
-
