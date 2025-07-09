@@ -342,11 +342,6 @@ def pacientes_editar(paciente_id):
 # Eliminar paciente 
 @app.route('/pacientes/eliminar/<int:paciente_id>', methods=['POST'])
 def pacientes_eliminar(paciente_id):
-    # Revisa el rol de admin
-    if session.get('rol') != 'Admin':
-        flash("Acceso denegado. Solo los administradores pueden eliminar pacientes.")
-        return redirect(url_for('login'))
-
     cursor = mysql.connection.cursor()
     try:
         cursor.execute("SELECT idpaciente FROM pacientes WHERE idpaciente = %s AND status = 1", (paciente_id,))
@@ -388,7 +383,25 @@ def pacientes_exploracion(paciente_id):
 
     return render_template('Pacientes/exploracion_paciente.html', paciente=paciente)
 
+@app.route('/citas')
+def citas():
+    return render_template('Pacientes/citas_pacientes.html')
 
+@app.route('/diagnostico')
+def diagnostico():
+    return render_template('Pacientes/diagnostico_paciente.html')
+
+@app.route('/receta')
+def receta():
+    return render_template('Pacientes/receta.html')
+
+@app.route('/exploracion')
+def exploracion():
+    return render_template('Pacientes/exploracion_paciente.html')
+
+@app.route('/exploracion/editar')
+def citas():
+    return render_template('Pacientes/exploracion_editar.html')
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
