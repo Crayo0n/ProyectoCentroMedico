@@ -385,22 +385,15 @@ def pacientes_exploracion(paciente_id):
 
 @app.route('/citas')
 def citas():
-    return render_template('Pacientes/citas_pacientes.html')
+    return render_template('Pacientes/citas_paciente.html')
 
 @app.route('/diagnostico')
 def diagnostico():
     return render_template('Pacientes/diagnostico_paciente.html')
 
-@app.route('/receta')
-def receta():
-    return render_template('Pacientes/receta.html')
-
-@app.route('/exploracion')
-def exploracion():
-    return render_template('Pacientes/exploracion_paciente.html')
 
 @app.route('/exploracion/editar')
-def citas():
+def exploracion_editar():
     return render_template('Pacientes/exploracion_editar.html')
 
 if __name__ == '__main__':
