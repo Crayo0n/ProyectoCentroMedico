@@ -97,50 +97,75 @@ def doctores_agregar():
         flash("Acceso denegado. Solo los administradores pueden agregar médicos.")
         return redirect(url_for('login'))
 
-    cursor = mysql.connection.cursor()
+    errores = {}
+    datos = {}  
+
     if request.method == 'POST':
-        rfc = request.form['rfc']
-        nombrecompleto = request.form['nombrecompleto']
-        cedula = request.form['cedula']
-        correo = request.form['correo']
-        contrasena = request.form['password']
-        idrol = request.form['rol']  
-        
-        try:
-            
-            if not rfc or not nombrecompleto or not cedula or not correo or not contrasena or not idrol:
-                flash('Todos los campos son obligatorios.', 'error')
-                return redirect(url_for('doctores_agregar'))
+        rfc = request.form.get('rfc', '').strip()
+        nombrecompleto = request.form.get('nombrecompleto', '').strip()
+        cedula = request.form.get('cedula', '').strip()
+        correo = request.form.get('correo', '').strip()
+        contrasena = request.form.get('password', '').strip()
+        idrol = request.form.get('rol', '').strip()
 
-            if len(rfc) != 12:
-                flash('El RFC debe tener 12 caracteres.', 'error')
-                return redirect(url_for('doctores_agregar'))
+        datos = {
+            'rfc': rfc,
+            'nombrecompleto': nombrecompleto,
+            'cedula': cedula,
+            'correo': correo,
+            'password': contrasena,
+            'rol': idrol
+        }
 
-            if not cedula.isdigit() or len(cedula) < 8 or len(cedula) > 10:
-                flash('La cédula profesional debe tener entre 8 y 10 dígitos.', 'error')
-                return redirect(url_for('doctores_agregar'))
+        # Validaciones
+        if not rfc:
+            errores['rfc'] = 'El RFC es obligatorio.'
+        elif len(rfc) != 12:
+            errores['rfc'] = 'El RFC debe tener 12 caracteres.'
 
-            if len(contrasena) < 6:
-                flash('La contraseña debe tener al menos 6 caracteres.', 'error')
-                return redirect(url_for('doctores_agregar'))
-            
-            cursor.execute("""
-                INSERT INTO medicos (rfc, nombrecompleto, cedulaprofesional, correo, contrasena, idrol, status)
-                VALUES (%s, %s, %s, %s, %s, %s, 1)
-            """, (rfc, nombrecompleto, cedula, correo, contrasena, idrol))
-            mysql.connection.commit()
-            flash("Médico agregado correctamente", 'success')  # Mensaje de éxito
-            return redirect(url_for('doctores'))
-        except MySQLdb.IntegrityError as e:
-            mysql.connection.rollback()
-            flash(f"Error: Entrada duplicada para RFC, Cédula Profesional o Correo. Verifique los datos. ({e})", 'error')  # Error
-        except MySQLdb.MySQLError as e:
-            mysql.connection.rollback()
-            flash(f"Error al agregar médico: {e}", 'error')  
-        finally:
-            cursor.close()
+        if not nombrecompleto:
+            errores['nombrecompleto'] = 'El nombre completo es obligatorio.'
 
-    return render_template('Medicos/agregar_medico.html')
+        if not cedula:
+            errores['cedula'] = 'La cédula profesional es obligatoria.'
+        elif not cedula.isdigit() or len(cedula) < 8 or len(cedula) > 10:
+            errores['cedula'] = 'Debe tener entre 8 y 10 dígitos numéricos.'
+
+        if not correo:
+            errores['correo'] = 'El correo es obligatorio.'
+
+        if not contrasena:
+            errores['password'] = 'La contraseña es obligatoria.'
+        elif len(contrasena) < 6:
+            errores['password'] = 'La contraseña debe tener al menos 6 caracteres.'
+
+        if not idrol:
+            errores['rol'] = 'Debe seleccionar un rol.'
+
+        if not errores:
+            try:
+                cursor = mysql.connection.cursor()
+                cursor.execute("""
+                    INSERT INTO medicos (rfc, nombrecompleto, cedulaprofesional, correo, contrasena, idrol, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, 1)
+                """, (rfc, nombrecompleto, cedula, correo, contrasena, idrol))
+                mysql.connection.commit()
+                flash("Médico agregado correctamente", 'success')
+                return redirect(url_for('doctores'))
+            except MySQLdb.IntegrityError as e:
+                mysql.connection.rollback()
+                errores['duplicado'] = 'RFC, Cédula o Correo ya registrados.'
+            except MySQLdb.MySQLError as e:
+                mysql.connection.rollback()
+                errores['bd'] = f'Error en la base de datos: {e}'
+            finally:
+                cursor.close()
+
+        # Si hay errores, se vuelve a renderizar el formulario
+        return render_template('Medicos/agregar_medico.html', errores=errores, datos=datos)
+
+    return render_template('Medicos/agregar_medico.html', errores=errores, datos={})
+
 
 
 # Ruta para editar médicos

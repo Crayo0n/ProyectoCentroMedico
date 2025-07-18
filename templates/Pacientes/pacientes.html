@@ -81,6 +81,9 @@
                         <td>{{ paciente.alergias }}</td>
                         <td>
                             <!-- Corregido el URL para que pase el paciente_id -->
+                             <a href="{{ url_for('citas') }}">
+                                <button class="btn-citas">Citas</button>
+                            </a>
                             <a href="{{ url_for('pacientes_editar', paciente_id=paciente.idpaciente) }}">
                                 <button class="btn-editar">Editar</button>
                             </a>

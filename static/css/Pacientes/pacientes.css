@@ -211,6 +211,17 @@ th, td {
     box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
 }
 
+.btn-citas {
+    background-color: #1f80e0;
+    color: rgb(255, 255, 255);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-right: 6px;
+    cursor: pointer;
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+}
+
 .btn-eliminar {
     background-color: #e74c3c;
     color: white;
@@ -231,7 +242,7 @@ th, td {
     transform: scale(1.1);
 }
 
-.btn-editar:hover {
+.btn-editar:hover , .btn-citas:hover{
     background-color: #53c0eb;
     transform: scale(1.1);
 }
