@@ -4,6 +4,7 @@ import MySQLdb
 import os
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -312,46 +313,155 @@ def pacientes_editar(paciente_id):
 
 #Ruta de la exploracion
 @app.route('/admin/exploracion/paciente', methods=['POST'])
-def exploracion_paciente():
+def guardar_exploracion():
     cursor = mysql.connection.cursor()
-    if request.method == 'POST':
-        idpaciente = request.form['idpaciente']
-        fecha = request.form['fecha']
-        peso = request.form['peso']
-        altura = request.form['altura']
-        temperatura = request.form['temperatura']
-        latidos = request.form['latidos']
-        saturacion = request.form['saturacion']
-        edad = request.form['edad']
+    form_data = request.form.to_dict()
+    field_errors = {} # Diccionario para almacenar errores por campo
 
+    # Recuperar el ID del paciente
+    paciente_id = form_data.get('idpaciente')
+    paciente = None
+    if paciente_id:
         try:
-            # Asegúrate de que tu tabla 'exploraciones' tenga una columna 'idpaciente'
-            cursor.execute("""
-                INSERT INTO exploraciones (idpaciente, fecha, peso, altura, temperatura, latidos, saturacion, edad)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (idpaciente, fecha, peso, altura, temperatura, latidos, saturacion, edad))
-            mysql.connection.commit()
-            flash("Exploración guardada correctamente.")
-            return redirect(url_for('pacientes')) # Redirige a la lista de pacientes
+            cursor.execute("SELECT idpaciente, nombrecompleto FROM pacientes WHERE idpaciente = %s", (paciente_id,))
+            paciente_data = cursor.fetchone()
+            if paciente_data:
+                paciente = {'idpaciente': paciente_data[0], 'nombrecompleto': paciente_data[1]}
         except MySQLdb.MySQLError as e:
-            mysql.connection.rollback()
-            flash(f"Error al guardar la exploración: {e}")
-        finally:
-            cursor.close()
+            flash(f"Error al obtener datos del paciente: {e}", 'error')
+            return redirect(url_for('pacientes'))
+    else:
+        flash("Error: ID de paciente no proporcionado.", 'error')
+        return redirect(url_for('pacientes'))
 
-    return redirect(url_for('pacientes'))
+
+    # --- 1. VALIDACIÓN DE CAMPOS VACÍOS ---
+    required_fields = {
+        'fecha': 'Fecha',
+        'peso': 'Peso',
+        'altura': 'Altura',
+        'temperatura': 'Temperatura',
+        'latidos': 'Latidos por minuto',
+        'saturacion': 'Saturación de oxígeno',
+        'edad': 'Edad'
+    }
+    
+    for field_name, display_name in required_fields.items():
+        if not form_data.get(field_name) or str(form_data.get(field_name)).strip() == '':
+            field_errors[field_name] = f"El campo '{display_name}' es obligatorio."
+
+    # --- 2. VALIDACIÓN DE TIPOS DE DATOS Y RANGOS ---
+    # Solo intentamos validar si el campo no estaba ya vacío
+    if 'peso' not in field_errors:
+        try:
+            peso = float(form_data['peso'])
+            if not (1.0 <= peso <= 300.0):
+                field_errors['peso'] = "El peso debe estar entre 1.0 y 300.0 kg."
+        except ValueError:
+            field_errors['peso'] = "Formato de peso inválido (solo números)."
+    
+    if 'altura' not in field_errors:
+        try:
+            altura = float(form_data['altura'])
+            if not (0.5 <= altura <= 2.5):
+                field_errors['altura'] = "La altura debe estar entre 0.5 y 2.5 metros."
+        except ValueError:
+            field_errors['altura'] = "Formato de altura inválido (solo números)."
+
+    if 'temperatura' not in field_errors:
+        try:
+            temperatura = float(form_data['temperatura'])
+            if not (35.0 <= temperatura <= 42.0):
+                field_errors['temperatura'] = "La temperatura debe estar entre 35.0 y 42.0 °C."
+        except ValueError:
+            field_errors['temperatura'] = "Formato de temperatura inválido (solo números)."
+
+    if 'latidos' not in field_errors:
+        try:
+            latidos = int(form_data['latidos'])
+            if not (40 <= latidos <= 200):
+                field_errors['latidos'] = "Los latidos deben estar entre 40 y 200 lpm."
+        except ValueError:
+            field_errors['latidos'] = "Formato de latidos inválido (solo números enteros)."
+
+    if 'saturacion' not in field_errors:
+        try:
+            saturacion = int(form_data['saturacion'])
+            if not (70 <= saturacion <= 100):
+                field_errors['saturacion'] = "La saturación debe estar entre 70% y 100%."
+        except ValueError:
+            field_errors['saturacion'] = "Formato de saturación inválido (solo números enteros)."
+
+    if 'edad' not in field_errors:
+        try:
+            edad = int(form_data['edad'])
+            if not (0 <= edad <= 120):
+                field_errors['edad'] = "La edad debe estar entre 0 y 120 años."
+        except ValueError:
+            field_errors['edad'] = "Formato de edad inválido (solo números enteros)."
+    
+    if 'fecha' not in field_errors:
+        fecha_str = form_data['fecha']
+        try:
+            datetime.strptime(fecha_str, '%Y-%m-%d')
+        except ValueError:
+            field_errors['fecha'] = "Formato de fecha inválido. Utilice AAAA-MM-DD."
+
+
+    # --- Manejo de Errores (si existen) ---
+    if field_errors:
+        # Aquí flasheamos un mensaje general SOLO si hay errores generales (no por campo)
+        # O si prefieres, puedes simplemente renderizar el template sin un flash general
+        # flash("Por favor, corrige los errores en los campos marcados.", 'error')
+        
+        # En vez de redirigir, renderizamos el template directamente,
+        # pasando los datos del formulario para pre-rellenar y los errores específicos
+        return render_template('Pacientes/exploracion_paciente.html', 
+                               paciente=paciente, 
+                               form_data=form_data, 
+                               field_errors=field_errors)
+
+
+    # --- Si todas las validaciones pasaron, proceder a guardar en la BD ---
+    try:
+        # Usa las variables ya convertidas y validadas
+        # Asegúrate de usar los valores convertidos (peso, altura, etc.)
+        cursor.execute("""
+            INSERT INTO exploraciones (idpaciente, fecha, peso, altura, temperatura, latidos, saturacion, edad)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (idpaciente, form_data['fecha'], peso, altura, temperatura, latidos, saturacion, edad))
+        mysql.connection.commit()
+        flash("Exploración guardada correctamente.", 'success')
+        return redirect(url_for('pacientes'))
+    except MySQLdb.MySQLError as e:
+        mysql.connection.rollback()
+        flash(f"Error de base de datos al guardar la exploración: {e}", 'error')
+        # Si es un error de BD, redirigimos a la lista de pacientes
+        return redirect(url_for('pacientes'))
+    finally:
+        cursor.close()
+
+
 
 @app.route('/pacientes/exploracion/<int:paciente_id>', methods=['GET'])
 def exploracion_formulario(paciente_id):
-    # Opcional: Verificar si el médico logeado tiene permiso para ver este paciente
-    # Si quieres implementar esto, necesitarías verificar si el idmedico del paciente coincide con session['idmedico']
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT idpaciente, nombrecompleto FROM pacientes WHERE idpaciente = %s", (paciente_id,))
+    paciente_data = cursor.fetchone()
+    cursor.close()
 
-    paciente = get_paciente_by_id_from_db(paciente_id)
-    if not paciente:
-        flash("Paciente no encontrado.")
+    if not paciente_data:
+        flash("Paciente no encontrado.", 'error')
         return redirect(url_for('pacientes'))
 
-    return render_template('Pacientes/exploracion_paciente.html', paciente=paciente)
+    paciente = {
+        'idpaciente': paciente_data[0],
+        'nombrecompleto': paciente_data[1]
+    }
+    return render_template('Pacientes/exploracion_paciente.html', paciente=paciente, form_data={}, field_errors={})
+
+
+
 
 # Ruta para previsualizar Recetas
 @app.route('/receta/preview/<int:paciente_id>')
