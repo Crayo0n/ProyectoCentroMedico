@@ -7,33 +7,35 @@
 </head>
 <body>
     <div class="container">
-        <!-- Barra lateral -->
-        <aside class="sidebar">
+       <aside class="sidebar">
         <div class="logo-wrapper">
             <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
         </div>
             <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
-            <img src="{{ url_for('static', filename='img/doctores.png') }}" alt="Médicos" class="sidebar-icon">
-            <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
+            {# ESTA ES LA IMAGEN MODIFICADA PARA REDIRIGIR A HOME (LOGIN) #}
+            <a href="{{ url_for('Salir') }}">
+                <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Cerrar Sesión" class="sidebar-icon">
+            </a>
         </aside>
 
-        <!-- Contenido principal -->
         <main class="main">
             <header class="header">
                 <h1>Administración de Médicos</h1>
-                <button class="btn-agregar">Agregar</button>
+                <a href="{{ url_for('doctores_agregar') }}" class="btn-agregar">Agregar</a>
             </header>
 
             <h3>Buscador</h3>
             <div class="buscador">
                 <input type="text" id="buscador" placeholder="Buscar médico...">
-               <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar"></button> 
+                <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}"
+                        alt="Buscar"></button>
             </div>
 
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Nombre Completo</th>
                         <th>RFC</th>
                         <th>Correo</th>
                         <th>Cédula Profesional</th>
@@ -42,22 +44,124 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for _ in range(5) %}
+                    {% for medico in medicos %}
                     <tr>
-                        <td>1</td>
-                        <td>ABCD010203XYZ</td>
-                        <td>correo@ejemplo.com</td>
-                        <td>1234567</td>
-                        <td>Administrador</td>
+                        <td>{{ medico.idmedico }}</td>
+                        <td>{{ medico.nombrecompleto }}</td>
+                        <td>{{ medico.rfc }}</td>
+                        <td>{{ medico.correo }}</td>
+                        <td>{{ medico.cedulaprofesional }}</td>
+                        <td>{{ medico.rol }}</td>
                         <td>
-                            <button class="btn-editar">Editar</button>
-                            <button class="btn-eliminar">Eliminar</button>
+                            <button class="btn-editar"><a href="{{ url_for('medicos_editar', medico_id=medico.idmedico) }}" >Editar</a></button>
+                            <button class="btn-eliminar" onclick="showDeleteConfirmationMedico({{ medico.idmedico }})">Eliminar</button>
+                            <form id="deleteFormMedico-{{ medico.idmedico }}" action="{{ url_for('medicos_eliminar', medico_id=medico.idmedico) }}" method="POST" style="display:none;"></form>
                         </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7">No hay médicos activos registrados.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </main>
     </div>
+
+    <div id="confirmationModalMedico" class="modal">
+        <div class="modal-content">
+            <p>¿Estás seguro de que quieres eliminar este médico?</p>
+            <div class="modal-buttons">
+                <button id="confirmDeleteBtnMedico" class="btn-confirm">Sí, Eliminar</button>
+                <button id="cancelDeleteBtnMedico" class="btn-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4); 
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+            max-width: 400px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .btn-confirm, .btn-cancel {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-confirm {
+            background-color: #dc3545; 
+            color: white;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d; 
+            color: white;
+        }
+    </style>
+
+    <script>
+        let currentMedicoIdToDelete = null;
+        const confirmationModalMedico = document.getElementById('confirmationModalMedico');
+        const confirmDeleteBtnMedico = document.getElementById('confirmDeleteBtnMedico');
+        const cancelDeleteBtnMedico = document.getElementById('cancelDeleteBtnMedico');
+
+        function showDeleteConfirmationMedico(medicoId) {
+            currentMedicoIdToDelete = medicoId;
+            confirmationModalMedico.style.display = 'flex'; 
+        }
+
+        confirmDeleteBtnMedico.onclick = function() {
+            if (currentMedicoIdToDelete) {
+                const form = document.getElementById(`deleteFormMedico-${currentMedicoIdToDelete}`);
+                if (form) {
+                    form.submit();
+                }
+            }
+            confirmationModalMedico.style.display = 'none';
+        }
+
+        cancelDeleteBtnMedico.onclick = function() {
+            confirmationModalMedico.style.display = 'none';
+            currentMedicoIdToDelete = null;
+        }
+
+        window.onclick = function(event) {
+            if (event.target == confirmationModalMedico) {
+                confirmationModalMedico.style.display = 'none';
+                currentMedicoIdToDelete = null;
+            }
+        }
+    </script>
 </body>
 </html>

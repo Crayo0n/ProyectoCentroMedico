@@ -5,47 +5,59 @@
     <title>Editar médico</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Medicos/AgregarEditarMedico.css') }}">
 </head>
+
 <body>
     <div class="container">
         <aside class="sidebar">
-        <div class="logo-wrapper">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-        </div>
+            <div class="logo-wrapper">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+            </div>
         </aside>
 
         <div class="form-container">
-                <h1>Editar médico</h1>
-            
+            <h1>Editar médico</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                {% for category, message in messages %}
+                        {{ message }}
+                    </li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+            {% endwith %}
+
             <div class="form-box">
-                <form method="POST" action="/agregar">
+                <form method="POST" action="{{ url_for('medicos_editar', medico_id=medico.idmedico) }}">
                     <label for="rfc">RFC:</label>
-                    <input type="text" id="rfc" name="rfc" required>
+                    <input type="text" id="rfc" name="rfc" value="{{ medico.rfc }}" required>
 
-                    <label for="nombre">Nombre completo:</label>
-                    <input type="text" id="nombre" name="nombre" required>
+                    <label for="nombrecompleto">Nombre completo:</label>
+                    <input type="text" id="nombrecompleto" name="nombrecompleto" value="{{ medico.nombrecompleto }}" required>
 
-                    <label for="cedula">Cédula profesional:</label>
-                    <input type="text" id="cedula" name="cedula" required>
+                    <label for="cedulaprofesional">Cédula Profesional:</label>
+                    <input type="text" id="cedulaprofesional" name="cedulaprofesional" value="{{ medico.cedulaprofesional }}" required>
 
                     <label for="correo">Correo:</label>
-                    <input type="email" id="correo" name="correo" required>
+                    <input type="email" id="correo" name="correo" value="{{ medico.correo }}" required>
 
-                    <label for="password">Contraseña:</label>
-                    <input type="password" id="password" name="password" required>
+                    <label for="contrasena">Contraseña:</label>
+                    <input type="password" id="contrasena" name="contrasena" value="{{ medico.contrasena }}" required>
 
-                    <label for="rol">Rol:</label>
-                    <select id="rol" name="rol" required>
-                        <option value="" disabled selected>Elija uno</option>
-                        <option value="administrador">Administrador</option>
-                        <option value="general">Médico general</option>
+                    <label for="idrol">Rol:</label>
+                    <select id="idrol" name="idrol" required>
+                        {% for rol in roles %}
+                            <option value="{{ rol.0 }}" {% if rol.0 == medico.idrol %}selected{% endif %}>{{ rol.1 }}</option>
+                        {% endfor %}
                     </select>
 
                     <div class="form-buttons">
-                        <button type="submit" class="guardar">Actualizar</button>
-                        <a href="/medicos" class="cancelar">Cancelar</a>
+                        <button type="submit" class="guardar">Guardar cambios</button>
+                        <a href="{{ url_for('doctores') }}" class="cancelar">Cancelar</a>
                     </div>
                 </form>
-            </div>    
+            </div>
         </div>
     </div>
 </body>
