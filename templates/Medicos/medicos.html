@@ -50,17 +50,6 @@
                 <a href="{{ url_for('doctores_agregar') }}"><button class="btn-agregar">Agregar</button></a>
             </header>
 
-            <!-- Buscador -->
-            <h3>Buscador</h3>
-            <div class="buscador">
-                <form method="GET" action="{{ url_for('doctores') }}">
-                    <input type="text" id="buscador" name="search" placeholder="Buscar médico..."
-                        value="{{ request.args.get('search') }}">
-                    <button class="btn-buscar" type="submit">
-                        <img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar">
-                    </button>
-                </form>
-            </div>
 
             <!-- Tabla de Médicos -->
             <table>

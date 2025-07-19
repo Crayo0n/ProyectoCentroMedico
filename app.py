@@ -66,7 +66,7 @@ def login():
             else:
                 flash('Contraseña incorrecta')
         else:
-            flash('RFC no registrado o inactivo')
+            flash('RFC no registrado')
 
     return render_template('login.html')
 
@@ -171,12 +171,13 @@ def doctores_agregar():
 # Ruta para editar médicos
 @app.route('/medicos/editar/<int:medico_id>', methods=['GET', 'POST'])
 def medicos_editar(medico_id):
-    
     if session.get('rol') != 'Admin':
         flash("Acceso denegado. Solo los administradores pueden editar médicos.")
         return redirect(url_for('login'))
 
-    # Obtener el médico a editar
+    errores = {}
+    datos = {}
+
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("""
         SELECT idmedico, rfc, nombrecompleto, cedulaprofesional, correo, contrasena, idrol, status
@@ -190,43 +191,80 @@ def medicos_editar(medico_id):
         return redirect(url_for('doctores'))
 
     if request.method == 'POST':
-        # Recibir los datos del formulario
-        rfc = request.form['rfc']
-        nombrecompleto = request.form['nombrecompleto']
-        cedula = request.form['cedula']
-        correo = request.form['correo']
-        contrasena = request.form['password']
-        rol_id = request.form['rol']
+        # Obtener los datos del formulario
+        rfc = request.form.get('rfc', '').strip()
+        nombrecompleto = request.form.get('nombrecompleto', '').strip()
+        cedula = request.form.get('cedula', '').strip()
+        correo = request.form.get('correo', '').strip()
+        contrasena = request.form.get('password', '').strip()
+        rol_id = request.form.get('rol', '').strip()
 
-        # Validar que los datos no estén vacíos
-        if not rfc or not nombrecompleto or not cedula or not correo or not contrasena or not rol_id:
-            flash("Todos los campos son obligatorios.", 'error')
-            return redirect(url_for('medicos_editar', medico_id=medico_id))
+        datos = {
+            'rfc': rfc,
+            'nombrecompleto': nombrecompleto,
+            'cedulaprofesional': cedula,
+            'correo': correo,
+            'contrasena': contrasena,
+            'idrol': rol_id
+        }
 
-        try:
-            # Se ejecuta la actualización en la base de datos
-            cursor.execute("""
-                UPDATE medicos
-                SET rfc = %s, nombrecompleto = %s, cedulaprofesional = %s, correo = %s, contrasena = %s, idrol = %s
-                WHERE idmedico = %s
-            """, (rfc, nombrecompleto, cedula, correo, contrasena, rol_id, medico_id))
+        # Validaciones
+        if not rfc:
+            errores['rfc'] = 'El RFC es obligatorio.'
+        elif len(rfc) != 12:
+            errores['rfc'] = 'El RFC debe tener 12 caracteres.'
 
-            mysql.connection.commit()
+        if not nombrecompleto:
+            errores['nombrecompleto'] = 'El nombre completo es obligatorio.'
 
-            # Verificar si se actualizó algún registro
-            if cursor.rowcount == 0:
-                flash("No se realizaron cambios. El médico ya tiene estos valores.", 'info')
-            else:
-                flash("Médico actualizado correctamente", 'success')
+        if not cedula:
+            errores['cedulaprofesional'] = 'La cédula profesional es obligatoria.'
+        elif not cedula.isdigit() or len(cedula) < 8 or len(cedula) > 10:
+            errores['cedulaprofesional'] = 'Debe tener entre 8 y 10 dígitos numéricos.'
 
-            return redirect(url_for('doctores')) 
-        except MySQLdb.MySQLError as e:
-            mysql.connection.rollback()
-            flash(f"Error al actualizar médico: {e}", 'error')
-        finally:
-            cursor.close()
+        if not correo:
+            errores['correo'] = 'El correo es obligatorio.'
 
-    return render_template('Medicos/editar_medico.html', medico=medico)
+        if not contrasena:
+            errores['contrasena'] = 'La contraseña es obligatoria.'
+        elif len(contrasena) < 6:
+            errores['contrasena'] = 'La contraseña debe tener al menos 6 caracteres.'
+
+        if not rol_id:
+            errores['idrol'] = 'Debe seleccionar un rol.'
+
+        if not errores:
+            try:
+                cursor.execute("""
+                    UPDATE medicos
+                    SET rfc = %s, nombrecompleto = %s, cedulaprofesional = %s, correo = %s, contrasena = %s, idrol = %s
+                    WHERE idmedico = %s
+                """, (rfc, nombrecompleto, cedula, correo, contrasena, rol_id, medico_id))
+
+                mysql.connection.commit()
+
+                if cursor.rowcount == 0:
+                    flash("No se realizaron cambios. El médico ya tiene estos valores.", 'info')
+                else:
+                    flash("Médico actualizado correctamente", 'success')
+
+                return redirect(url_for('doctores'))
+
+            except MySQLdb.IntegrityError as e:
+                mysql.connection.rollback()
+                errores['duplicado'] = "Datos duplicados: revise RFC, cédula o correo."
+            except MySQLdb.MySQLError as e:
+                mysql.connection.rollback()
+                errores['bd'] = f"Error al actualizar médico: {e}"
+            finally:
+                cursor.close()
+
+        # En caso de errores, sobreescribimos los datos que ya tenías con el formulario
+        medico.update(datos)
+        return render_template('Medicos/editar_medico.html', medico=medico, errores=errores)
+
+    return render_template('Medicos/editar_medico.html', medico=medico, errores=errores)
+
 
 
 
