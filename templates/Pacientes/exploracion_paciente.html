@@ -3,52 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <title>Exploración del paciente</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/AgregarEditarExploracion.css') }}">
-</head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/exploracion.css') }}">
+    </head>
 <body>
-    <div class="container">
-       <!-- Barra lateral -->
-        <aside class="sidebar">
+    <div class="sidebar">
         <div class="logo-wrapper">
             <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
         </div>
-        </aside>
+        <a href="{{ url_for('Salir') }}" class="logout">
+            <img src="{{ url_for('static', filename='img/sidebar-iconSalir.png') }}" alt="Salir" class="sidebar-iconSalir">
+        </a>
+    </div>
 
-        <div class="form-container">
-            <div class="form-box">
-                <h1>Exploración del paciente</h1>
-                <form method="POST" action="/admin/exploracion/paciente">
-                    <label for="paciente">Paciente:</label>
-                    <input type="text" id="paciente" name="paciente" required>
+    <div class="main">
+        <div class="form-box">
+            <h1>Exploración del paciente</h1>
+            <form method="POST" action="{{ url_for('exploracion_paciente') }}">
+                <input type="hidden" name="idpaciente" value="{{ paciente.idpaciente }}">
 
-                    <label for="fecha">Fecha:</label>
-                    <input type="date" id="fecha" name="fecha" required>
+                <label for="paciente_nombre">Paciente:</label>
+                <input type="text" id="paciente_nombre" name="paciente_nombre" value="{{ paciente.nombrecompleto }}" readonly>
 
-                    <label for="peso">Peso:</label>
-                    <input type="number" id="peso" name="peso" required>
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha" name="fecha" required>
 
-                    <label for="altura">Altura:</label>
-                    <input type="number" id="altura" name="altura" required>
+                <label for="peso">Peso:</label>
+                <input type="number" id="peso" name="peso" step="0.01" required>
 
-                    <label for="temperatura">Temperatura:</label>
-                    <input type="number" id="temperatura" name="temperatura" required>
+                <label for="altura">Altura:</label>
+                <input type="number" id="altura" name="altura" step="0.01" required>
 
-                    <label for="latidos">Latidos por minuto:</label>
-                    <input type="number" id="latidos" name="latidos" required>
+                <label for="temperatura">Temperatura:</label>
+                <input type="number" id="temperatura" name="temperatura" step="0.1" required>
 
-                    <label for="saturacion">Saturación de oxígeno:</label>
-                    <input type="number" id="saturacion" name="saturacion" required>
+                <label for="latidos">Latidos por minuto:</label>
+                <input type="number" id="latidos" name="latidos" required>
 
-                    <label for="edad">Edad:</label>
-                    <input type="number" id="edad" name="edad" required>
+                <label for="saturacion">Saturación de oxígeno:</label>
+                <input type="number" id="saturacion" name="saturacion" required>
 
-                    <div class="form-buttons">
-                        <button type="submit" class="guardar">Guardar</button>
-                        <a href="/pacientes" class="cancelar">Cancelar</a>
-                    </div>
-                </form>
-            </div>
+                <label for="edad">Edad:</label>
+                <input type="number" id="edad" name="edad" required>
+
+                <div class="form-buttons">
+                    <button type="submit" class="guardar">Guardar</button>
+                    <a href="{{ url_for('pacientes') }}" class="cancelar">Cancelar</a>
+                </div>
+            </form>
         </div>
     </div>
-</body>
+    </body>
 </html>
