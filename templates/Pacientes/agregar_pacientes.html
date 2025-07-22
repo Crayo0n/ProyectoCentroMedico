@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Agregar paciente</title>
@@ -18,33 +19,31 @@
         <div class="form-container">
             <h1>Agregar paciente</h1>
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul>
-                {% for category, message in messages %}
-                        {{ message }}
-                    </li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-            {% endwith %}
 
             <div class="form-box">
                 <form method="POST" action="{{ url_for('pacientes_agregar') }}">
                     <label for="nombrecompleto">Nombre completo:</label>
-                    <input type="text" id="nombrecompleto" name="nombrecompleto" required>
+                    <input type="text" name="nombrecompleto" class="form-control" value="{{ datos.nombrecompleto }}">
+                    {% if errores.nombrecompleto %}
+                    <small class="text-danger" style="color: red;">{{ errores.nombrecompleto }}</small>
+                    {% endif %}
+
 
                     {# The physician selection field has been removed, as it is automatically assigned #}
                     {# <label for="idmedico">Médico que atiende:</label> #}
                     {# <select id="idmedico" name="idmedico" required> #}
-                    {#     <option value="" disabled selected>Seleccione un médico</option> #}
-                    {#     {% for medico in medicos %} #}
-                    {#         <option value="{{ medico.idmedico }}">{{ medico.nombrecompleto }}</option> #}
-                    {#     {% endfor %} #}
-                    {# </select> #}
+                        {# <option value="" disabled selected>Seleccione un médico</option> #}
+                        {# {% for medico in medicos %} #}
+                        {# <option value="{{ medico.idmedico }}">{{ medico.nombrecompleto }}</option> #}
+                        {# {% endfor %} #}
+                        {# </select> #}
 
                     <label for="fechanacimiento">Fecha de nacimiento:</label>
-                    <input type="date" id="fechanacimiento" name="fechanacimiento" required>
+                    <input type="date" name="fechanacimiento" class="form-control" value="{{ datos.fechanacimiento }}">
+                    {% if errores.fechanacimiento %}
+                    <small class="text-danger" style="color: red;">{{ errores.fechanacimiento }}</small>
+                    {% endif %}
+
 
                     <label for="enfermedadescronicas">Enfermedades crónicas:</label>
                     <input type="text" id="enfermedadescronicas" name="enfermedadescronicas" placeholder="(Opcional)">
@@ -64,4 +63,5 @@
         </div>
     </div>
 </body>
+
 </html>

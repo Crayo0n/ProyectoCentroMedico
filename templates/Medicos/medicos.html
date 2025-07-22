@@ -1,35 +1,55 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Administración de Médicos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Medicos/medicos.css') }}">
 </head>
+
 <body>
     <div class="container">
-       <aside class="sidebar">
-        <div class="logo-wrapper">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-        </div>
-            <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
-            {# ESTA ES LA IMAGEN MODIFICADA PARA REDIRIGIR A HOME (LOGIN) #}
-            <a href="{{ url_for('Salir') }}">
-                <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Cerrar Sesión" class="sidebar-icon">
-            </a>
+        <!-- Barra lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <div class="logo-wrapper">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+                </div>
+                <a href="{{ url_for('pacientes') }}">
+                    <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
+                </a>
+                {% if session['rol'] == 'Admin' %}
+                <a href="{{ url_for('doctores') }}">
+                    <img src="{{ url_for('static', filename='img/doctores.png') }}" class="sidebar-icon" alt="Doctores">
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="sidebar-bottom">
+                <a href="{{ url_for('Salir') }}">
+                    <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir"
+                        class="sidebar-iconSalir logout">
+                </a>
+            </div>
         </aside>
 
         <main class="main">
             <header class="header">
                 <h1>Administración de Médicos</h1>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
                 <a href="{{ url_for('doctores_agregar') }}" class="btn-agregar">Agregar</a>
             </header>
 
-            <h3>Buscador</h3>
-            <div class="buscador">
-                <input type="text" id="buscador" placeholder="Buscar médico...">
-                <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}"
-                        alt="Buscar"></button>
-            </div>
+
 
             <table>
                 <thead>
@@ -53,9 +73,13 @@
                         <td>{{ medico.cedulaprofesional }}</td>
                         <td>{{ medico.rol }}</td>
                         <td>
-                            <button class="btn-editar"><a href="{{ url_for('medicos_editar', medico_id=medico.idmedico) }}" >Editar</a></button>
-                            <button class="btn-eliminar" onclick="showDeleteConfirmationMedico({{ medico.idmedico }})">Eliminar</button>
-                            <form id="deleteFormMedico-{{ medico.idmedico }}" action="{{ url_for('medicos_eliminar', medico_id=medico.idmedico) }}" method="POST" style="display:none;"></form>
+                            <button class="btn-editar"><a
+                                    href="{{ url_for('medicos_editar', medico_id=medico.idmedico) }}">Editar</a></button>
+                            <button class="btn-eliminar"
+                                onclick="showDeleteConfirmationMedico({{ medico.idmedico }})">Eliminar</button>
+                            <form id="deleteFormMedico-{{ medico.idmedico }}"
+                                action="{{ url_for('medicos_eliminar', medico_id=medico.idmedico) }}" method="POST"
+                                style="display:none;"></form>
                         </td>
                     </tr>
                     {% else %}
@@ -78,57 +102,6 @@
         </div>
     </div>
 
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1; 
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.4); 
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; 
-            max-width: 400px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .modal-buttons {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .btn-confirm, .btn-cancel {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .btn-confirm {
-            background-color: #dc3545; 
-            color: white;
-        }
-
-        .btn-cancel {
-            background-color: #6c757d; 
-            color: white;
-        }
-    </style>
 
     <script>
         let currentMedicoIdToDelete = null;
@@ -138,10 +111,10 @@
 
         function showDeleteConfirmationMedico(medicoId) {
             currentMedicoIdToDelete = medicoId;
-            confirmationModalMedico.style.display = 'flex'; 
+            confirmationModalMedico.style.display = 'flex';
         }
 
-        confirmDeleteBtnMedico.onclick = function() {
+        confirmDeleteBtnMedico.onclick = function () {
             if (currentMedicoIdToDelete) {
                 const form = document.getElementById(`deleteFormMedico-${currentMedicoIdToDelete}`);
                 if (form) {
@@ -151,12 +124,12 @@
             confirmationModalMedico.style.display = 'none';
         }
 
-        cancelDeleteBtnMedico.onclick = function() {
+        cancelDeleteBtnMedico.onclick = function () {
             confirmationModalMedico.style.display = 'none';
             currentMedicoIdToDelete = null;
         }
 
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target == confirmationModalMedico) {
                 confirmationModalMedico.style.display = 'none';
                 currentMedicoIdToDelete = null;
@@ -164,4 +137,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -1,39 +1,45 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Citas del paciente</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/citas_paciente.css') }}">
 </head>
+
 <body>
     <div class="container">
-       <!-- Barra lateral -->
+        <!-- Barra lateral -->
         <aside class="sidebar">
-        <div class="logo-wrapper">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-        </div>
-            <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
-            {% if session['rol'] == 'Admin' %}
+            <div class="sidebar-top">
+                <div class="logo-wrapper">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+                </div>
+                <a href="{{ url_for('pacientes') }}">
+                    <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
+                </a>
+                {% if session['rol'] == 'Admin' %}
                 <a href="{{ url_for('doctores') }}">
                     <img src="{{ url_for('static', filename='img/doctores.png') }}" class="sidebar-icon" alt="Doctores">
                 </a>
                 {% endif %}
-            
-            <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir" class="sidebar-iconSalir logout">
+            </div>
+
+            <div class="sidebar-bottom">
+                <a href="{{ url_for('Salir') }}">
+                    <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir"
+                        class="sidebar-iconSalir logout">
+                </a>
+
+            </div>
         </aside>
 
         <!-- Main content -->
         <main class="main">
             <header class="header">
                 <h1>Citas del paciente </h1>
-                <a href="/pacientes/agregar" class="btn-agregar">Agregar</a>
             </header>
 
-            <h3>Buscador</h3>
-            <div class="buscador">
-                <input type="text" id="buscador" placeholder="Buscar cita...">
-               <button class="btn-buscar"><img src="{{ url_for('static', filename='img/lupa.png') }}" alt="Buscar"></button> 
-            </div>
 
             <table>
                 <thead>
@@ -41,34 +47,49 @@
                         <th>ID</th>
                         <th>Fecha</th>
                         <th>Peso</th>
+                        <th>Altura</th>
                         <th>Temperatura</th>
                         <th>Latidos por minuto</th>
+                        <th>Saturación</th>
                         <th>Glucosa</th>
-                        <th>Edad</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for _ in range(5) %}
+                    {% if exploraciones %}
+                    {% for cita in exploraciones %}
                     <tr>
-                        <td>1</td>
-                        <td>1990-05-10</td>
-                        <td>60 kg</td>
-                        <td>34 C</td>
-                        <td>120</td>
-                        <td>10</td>
-                        <td>21</td>
+                        <td>{{ cita.idcita }}</td>
+                        <td>{{ cita.fecha }}</td>
+                        <td>{{ cita.peso }} kg</td>
+                        <td>{{ cita.altura }} m</td>
+                        <td>{{ cita.temperatura }} °C</td>
+                        <td>{{ cita.latidosmin }}lpm</td>
+                        <td>{{ cita.saturacionoxigeno }}%</td>
+                        <td>{{ cita.glucosa }}mg/dL</td>
                         <td>
-                            <button class="btn-editar"><a>Editar</a></button>
-                            <button class="btn-explorar"><a>Diagnóstico</a></button>
-                            <button class="btn-descargar"><a>Descargar receta</a></button>
-                            <button class="btn-eliminar">Eliminar</button>
+                            <a href="{{ url_for('editar_exploracion', cita_id=cita.idcita) }}">
+                                <button class="btn-editar">Editar</button>
+                            </a>
+                            
+                            <a href="#" class="btn-explorar">Diagnóstico</a>
+                            <a href="#" class="btn-descargar">Descargar receta</a>
+                            <form method="POST" action="#" style="display:inline;">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8">Este paciente no tiene exploraciones registradas.</td>
+                    </tr>
+                    {% endif %}
                 </tbody>
+
             </table>
         </main>
     </div>
 </body>
+
 </html>

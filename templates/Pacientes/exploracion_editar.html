@@ -1,54 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Editar exploración del paciente</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/AgregarEditarExploracion.css') }}">
 </head>
+
 <body>
     <div class="container">
         <!-- Barra lateral -->
         <aside class="sidebar">
-        <div class="logo-wrapper">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-        </div>
+            <div class="logo-wrapper">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+            </div>
         </aside>
 
         <div class="form-container">
             <div class="form-box">
                 <h1>Editar exploración del paciente</h1>
-                <form method="POST" action="/admin/exploracion/paciente">
-                    <label for="paciente">Paciente:</label>
-                    <input type="text" id="paciente" name="paciente" required>
 
+                <form method="POST">
                     <label for="fecha">Fecha:</label>
-                    <input type="date" id="fecha" name="fecha" required>
+                    <input type="date" name="fecha" value="{{ cita.fecha }}" required>
+                    {% if errors.fecha %}
+                    <small class="text-danger" style="color: red;">{{ errors.fecha }}</small>
+                    {% endif %}
 
                     <label for="peso">Peso:</label>
-                    <input type="number" id="peso" name="peso" required>
+                    <input type="text" name="peso" value="{{ cita.peso }}" required>
+                    {% if errors.peso %}
+                    <small class="text-danger" style="color: red;">{{ errors.peso }}</small>
+                    {% endif %}
 
                     <label for="altura">Altura:</label>
-                    <input type="number" id="altura" name="altura" required>
+                    <input type="text" name="altura" value="{{ cita.altura }}" required>
+                    {% if errors.altura %}
+                    <small class="text-danger" style="color: red;">{{ errors.altura }}</small>
+                    {% endif %}
 
                     <label for="temperatura">Temperatura:</label>
-                    <input type="number" id="temperatura" name="temperatura" required>
+                    <input type="text" name="temperatura" value="{{ cita.temperatura }}" required>
+                    {% if errors.temperatura %}
+                    <small class="text-danger" style="color: red;">{{ errors.temperatura }}</small>
+                    {% endif %}
 
                     <label for="latidos">Latidos por minuto:</label>
-                    <input type="number" id="latidos" name="latidos" required>
+                    <input type="text" name="latidos" value="{{ cita.latidosmin }}" required>
+                    {% if errors.latidos %}
+                    <small class="text-danger" style="color: red;">{{ errors.latidos }}</small>
+                    {% endif %}
 
                     <label for="saturacion">Saturación de oxígeno:</label>
-                    <input type="number" id="saturacion" name="saturacion" required>
+                    <input type="text" name="saturacion" value="{{ cita.saturacionoxigeno }}" required>
+                    {% if errors.saturacion %}
+                    <small class="text-danger" style="color: red;">{{ errors.saturacion }}</small>
+                    {% endif %}
 
-                    <label for="edad">Edad:</label>
-                    <input type="number" id="edad" name="edad" required>
+                    <label for="glucosa">Glucosa:</label>
+                    <input type="text" name="glucosa" value="{{ cita.glucosa }}" required>
+                    {% if errors.glucosa %}
+                    <small class="text-danger" style="color: red;">{{ errors.glucosa }}</small>
+                    {% endif %}
 
-                    <div class="form-buttons">
-                        <button type="submit" class="guardar">Actualizar</button>
-                        <a href="/pacientes" class="cancelar">Cancelar</a>
-                    </div>
+                    <button type="submit">Actualizar exploración</button>
+                    <button>Cancelar</button>
                 </form>
+
             </div>
         </div>
     </div>
 </body>
+
 </html>
