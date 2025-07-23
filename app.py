@@ -166,7 +166,7 @@ def doctores_agregar():
 
     return render_template('Medicos/agregar_medico.html', errores=errores, datos={})
 
-
+#Ruta para editar un médico
 @app.route('/medicos/editar/<int:medico_id>', methods=['GET', 'POST'])
 def medicos_editar(medico_id):
     if session.get('rol') != 'Admin':
@@ -554,12 +554,14 @@ def guardar_exploracion(paciente_id):
         except ValueError:
             field_errors['glucosa'] = "Formato de glucosa inválido."
 
-        if 'fecha' not in field_errors:
-            try:
-                fecha_str = form_data['fecha']
-                datetime.strptime(fecha_str, '%Y-%m-%d')
-            except ValueError:
-                field_errors['fecha'] = "Formato de fecha inválido. Use AAAA-MM-DD."
+        fecha_str = form_data['fecha']
+        if not fecha_str:
+            field_errors['fecha'] = "La fecha es obligatoria."
+        try:
+            # Convertir la fecha de string a formato DATETIME
+            fecha = datetime.strptime(fecha_str, '%Y-%m-%dT%H:%M')
+        except ValueError:
+            field_errors['fecha'] = "Formato de fecha y hora inválido. Use YYYY-MM-DDTHH:MM."
 
         # --- SI HAY ERRORES ---
         if field_errors:
@@ -647,7 +649,7 @@ def editar_exploracion(cita_id):
 
     if request.method == 'POST':
         # Obtener los nuevos datos del formulario
-        fecha = request.form['fecha']
+        fecha_str = request.form['fecha']
         peso = request.form['peso']
         altura = request.form['altura']
         temperatura = request.form['temperatura']
@@ -657,8 +659,13 @@ def editar_exploracion(cita_id):
 
         # Validar los datos del formulario
         errors = {}
-        if not fecha:
+        if not fecha_str:
             errors['fecha'] = "La fecha es obligatoria."
+        try:
+            # Convertir la fecha de string a formato DATETIME
+            fecha = datetime.strptime(fecha_str, '%Y-%m-%dT%H:%M')
+        except ValueError:
+            errors['fecha'] = "Formato de fecha y hora inválido. Use YYYY-MM-DDTHH:MM."
         if not peso or not (1.0 <= float(peso) <= 300.0):
             errors['peso'] = "El peso debe estar entre 1.0 y 300.0 kg."
         if not altura or not (0.5 <= float(altura) <= 2.5):

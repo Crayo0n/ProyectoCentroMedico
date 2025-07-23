@@ -4,105 +4,110 @@
 <head>
     <meta charset="UTF-8">
     <title>Exploración del paciente</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/exploracion.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/AgregarEditarExploracion.css') }}">
 </head>
 
 <body>
-    <div class="sidebar">
-    </div>
+    <div class="container">
+        <!-- Barra lateral -->
+        <aside class="sidebar">
+            <div class="logo-wrapper">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+            </div>
+        </aside>
 
-    <div class="main">
-        <div class="form-box">
-            <h1>Exploración del paciente</h1>
+        <div class="form-container">
+            <div class="form-box">
+                <h1>Exploración del paciente</h1>
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            <ul class="flash-messages">
-                {% for category, message in messages %}
-                <li class="flash-message {{ category }}">{{ message | safe }}</li> {# | safe para permitir <br> #}
-                {% endfor %}
-            </ul>
-            {% endif %}
-            {% endwith %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                    <li class="flash-message {{ category }}">{{ message | safe }}</li> {# | safe para permitir <br> #}
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
 
-            <form method="POST" action="{{ url_for('guardar_exploracion', paciente_id=paciente.idpaciente) }}">
+                <form method="POST" action="{{ url_for('guardar_exploracion', paciente_id=paciente.idpaciente) }}">
 
-                <input type="hidden" name="idpaciente" value="{{ paciente.idpaciente }}">
+                    <input type="hidden" name="idpaciente" value="{{ paciente.idpaciente }}">
 
-                <div class="form-group">
+
                     <label for="paciente_nombre">Paciente:</label>
                     <input type="text" id="paciente_nombre" name="paciente_nombre" value="{{ paciente.nombrecompleto }}"
                         readonly>
-                </div>
 
-                <div class="form-group">
+
+
                     <label for="fecha">Fecha:</label>
-                    <input type="date" id="fecha" name="fecha" value="{{ form_data.fecha if form_data.fecha else '' }}"
-                        >
+                    <input type="datetime-local" id="fecha" name="fecha" value="{{ form_data.fecha if form_data.fecha else '' }}">
                     {% if field_errors.fecha %} {# Comprueba si hay un error para este campo #}
                     <span class="error-message" style="color: red;">{{ field_errors.fecha }}</span>
                     {% endif %}
-                </div>
 
-                <div class="form-group">
+
+
                     <label for="peso">Peso:</label>
                     <input type="number" id="peso" name="peso" step="0.01"
-                        value="{{ form_data.peso if form_data.peso else '' }}" >
+                        value="{{ form_data.peso if form_data.peso else '' }}">
                     {% if field_errors.peso %}
                     <span class="error-message" style="color: red;">{{ field_errors.peso }}</span>
                     {% endif %}
-                </div>
 
-                <div class="form-group">
+
+
                     <label for="altura">Altura:</label>
                     <input type="number" id="altura" name="altura" step="0.01"
-                        value="{{ form_data.altura if form_data.altura else '' }}" >
+                        value="{{ form_data.altura if form_data.altura else '' }}">
                     {% if field_errors.altura %}
                     <span class="error-message" style="color: red;">{{ field_errors.altura }}</span>
                     {% endif %}
-                </div>
 
-                <div class="form-group">
+
+
                     <label for="temperatura">Temperatura:</label>
                     <input type="number" id="temperatura" name="temperatura" step="0.1"
-                        value="{{ form_data.temperatura if form_data.temperatura else '' }}" >
+                        value="{{ form_data.temperatura if form_data.temperatura else '' }}">
                     {% if field_errors.temperatura %}
                     <span class="error-message" style="color: red;">{{ field_errors.temperatura }}</span>
                     {% endif %}
-                </div>
 
-                <div class="form-group">
+
+
                     <label for="latidos">Latidos por minuto:</label>
                     <input type="number" id="latidos" name="latidos"
-                        value="{{ form_data.latidos if form_data.latidos else '' }}" >
+                        value="{{ form_data.latidos if form_data.latidos else '' }}">
                     {% if field_errors.latidos %}
                     <span class="error-message" style="color: red;">{{ field_errors.latidos }}</span>
                     {% endif %}
-                </div>
 
-                <div class="form-group">
+
+
                     <label for="saturacion">Saturación de oxígeno:</label>
                     <input type="number" id="saturacion" name="saturacion"
-                        value="{{ form_data.saturacion if form_data.saturacion else '' }}" >
+                        value="{{ form_data.saturacion if form_data.saturacion else '' }}">
                     {% if field_errors.saturacion %}
                     <span class="error-message" style="color: red;">{{ field_errors.saturacion }}</span>
                     {% endif %}
-                </div>
 
-                <div class="form-group">
+
+
                     <label for="glucosa">Glucosa:</label>
-                    <input type="number" id="glucosa" name="glucosa" value="{{ form_data.glucosa if form_data.glucosa else '' }}"
-                        >
+                    <input type="number" id="glucosa" name="glucosa"
+                        value="{{ form_data.glucosa if form_data.glucosa else '' }}">
                     {% if field_errors.glucosa %}
                     <span class="error-message" style="color: red;">{{ field_errors.glucosa }}</span>
                     {% endif %}
-                </div>
 
-                <div class="form-buttons">
-                    <button type="submit" class="guardar">Guardar</button>
-                    <a href="{{ url_for('pacientes') }}" class="cancelar">Cancelar</a>
-                </div>
-            </form>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="guardar">Guardar</button>
+                        <a href="{{ url_for('pacientes') }}" class="cancelar">Cancelar</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </body>

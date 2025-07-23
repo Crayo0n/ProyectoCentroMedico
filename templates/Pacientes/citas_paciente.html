@@ -38,6 +38,17 @@
         <main class="main">
             <header class="header">
                 <h1>Citas del paciente </h1>
+                <!-- Mostrar mensajes de flash -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
             </header>
 
 
@@ -49,7 +60,7 @@
                         <th>Peso</th>
                         <th>Altura</th>
                         <th>Temperatura</th>
-                        <th>Latidos por minuto</th>
+                        <th>Latidos por min</th>
                         <th>Saturación</th>
                         <th>Glucosa</th>
                         <th>Acciones</th>

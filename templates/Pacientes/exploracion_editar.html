@@ -22,49 +22,51 @@
 
                 <form method="POST">
                     <label for="fecha">Fecha:</label>
-                    <input type="date" name="fecha" value="{{ cita.fecha }}" required>
+                    <input type="date" name="fecha" value="{{ cita.fecha }}" >
                     {% if errors.fecha %}
                     <small class="text-danger" style="color: red;">{{ errors.fecha }}</small>
                     {% endif %}
 
                     <label for="peso">Peso:</label>
-                    <input type="text" name="peso" value="{{ cita.peso }}" required>
+                    <input type="text" name="peso" value="{{ cita.peso }}" >
                     {% if errors.peso %}
                     <small class="text-danger" style="color: red;">{{ errors.peso }}</small>
                     {% endif %}
 
                     <label for="altura">Altura:</label>
-                    <input type="text" name="altura" value="{{ cita.altura }}" required>
+                    <input type="text" name="altura" value="{{ cita.altura }}" >
                     {% if errors.altura %}
                     <small class="text-danger" style="color: red;">{{ errors.altura }}</small>
                     {% endif %}
 
                     <label for="temperatura">Temperatura:</label>
-                    <input type="text" name="temperatura" value="{{ cita.temperatura }}" required>
+                    <input type="text" name="temperatura" value="{{ cita.temperatura }}" >
                     {% if errors.temperatura %}
                     <small class="text-danger" style="color: red;">{{ errors.temperatura }}</small>
                     {% endif %}
 
                     <label for="latidos">Latidos por minuto:</label>
-                    <input type="text" name="latidos" value="{{ cita.latidosmin }}" required>
+                    <input type="text" name="latidos" value="{{ cita.latidosmin }}" >
                     {% if errors.latidos %}
                     <small class="text-danger" style="color: red;">{{ errors.latidos }}</small>
                     {% endif %}
 
                     <label for="saturacion">Saturación de oxígeno:</label>
-                    <input type="text" name="saturacion" value="{{ cita.saturacionoxigeno }}" required>
+                    <input type="text" name="saturacion" value="{{ cita.saturacionoxigeno }}" >
                     {% if errors.saturacion %}
                     <small class="text-danger" style="color: red;">{{ errors.saturacion }}</small>
                     {% endif %}
 
                     <label for="glucosa">Glucosa:</label>
-                    <input type="text" name="glucosa" value="{{ cita.glucosa }}" required>
+                    <input type="text" name="glucosa" value="{{ cita.glucosa }}" >
                     {% if errors.glucosa %}
                     <small class="text-danger" style="color: red;">{{ errors.glucosa }}</small>
                     {% endif %}
 
-                    <button type="submit">Actualizar exploración</button>
-                    <button>Cancelar</button>
+                    <div class="form-buttons">
+                        <button type="submit" class="guardar">Actualizar</button>
+                        <a href="{{ url_for('citas_paciente', paciente_id=cita['idpaciente']) }}" class="cancelar">Cancelar</a>
+                    </div>
                 </form>
 
             </div>
