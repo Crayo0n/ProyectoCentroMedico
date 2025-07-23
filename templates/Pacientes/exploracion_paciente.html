@@ -51,7 +51,7 @@
 
                     <label for="peso">Peso:</label>
                     <input type="number" id="peso" name="peso" step="0.01"
-                        value="{{ form_data.peso if form_data.peso else '' }}">
+                        value="{{ form_data.peso if form_data.peso else '' }}" placeholder="Valor en kg">
                     {% if field_errors.peso %}
                     <span class="error-message" style="color: red;">{{ field_errors.peso }}</span>
                     {% endif %}
@@ -60,7 +60,7 @@
 
                     <label for="altura">Altura:</label>
                     <input type="number" id="altura" name="altura" step="0.01"
-                        value="{{ form_data.altura if form_data.altura else '' }}">
+                        value="{{ form_data.altura if form_data.altura else '' }}" placeholder="Valor en metros">
                     {% if field_errors.altura %}
                     <span class="error-message" style="color: red;">{{ field_errors.altura }}</span>
                     {% endif %}
@@ -69,7 +69,7 @@
 
                     <label for="temperatura">Temperatura:</label>
                     <input type="number" id="temperatura" name="temperatura" step="0.1"
-                        value="{{ form_data.temperatura if form_data.temperatura else '' }}">
+                        value="{{ form_data.temperatura if form_data.temperatura else '' }}" placeholder="Valores entre 20° y 40° Celcius">
                     {% if field_errors.temperatura %}
                     <span class="error-message" style="color: red;">{{ field_errors.temperatura }}</span>
                     {% endif %}
@@ -78,7 +78,7 @@
 
                     <label for="latidos">Latidos por minuto:</label>
                     <input type="number" id="latidos" name="latidos"
-                        value="{{ form_data.latidos if form_data.latidos else '' }}">
+                        value="{{ form_data.latidos if form_data.latidos else '' }}" placeholder="Valores entre 20lpm y 300lpm">
                     {% if field_errors.latidos %}
                     <span class="error-message" style="color: red;">{{ field_errors.latidos }}</span>
                     {% endif %}
@@ -87,7 +87,7 @@
 
                     <label for="saturacion">Saturación de oxígeno:</label>
                     <input type="number" id="saturacion" name="saturacion"
-                        value="{{ form_data.saturacion if form_data.saturacion else '' }}">
+                        value="{{ form_data.saturacion if form_data.saturacion else '' }}" placeholder="Valor entre 80% y 100%">
                     {% if field_errors.saturacion %}
                     <span class="error-message" style="color: red;">{{ field_errors.saturacion }}</span>
                     {% endif %}
@@ -96,7 +96,7 @@
 
                     <label for="glucosa">Glucosa:</label>
                     <input type="number" id="glucosa" name="glucosa"
-                        value="{{ form_data.glucosa if form_data.glucosa else '' }}">
+                        value="{{ form_data.glucosa if form_data.glucosa else '' }}" placeholder="Valor entre 40 y 150 mg/dL">
                     {% if field_errors.glucosa %}
                     <span class="error-message" style="color: red;">{{ field_errors.glucosa }}</span>
                     {% endif %}
