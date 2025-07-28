@@ -517,16 +517,16 @@ def guardar_exploracion(paciente_id):
         try:
             if 'altura' not in field_errors:
                 altura = float(form_data['altura'])
-                if not (0.5 <= altura <= 2.5):
-                    field_errors['altura'] = "La altura debe estar entre 0.5 y 2.5 metros."
+                if not (0.5 <= altura <= 4.0):
+                    field_errors['altura'] = "La altura debe estar entre 0.5 y 4.0 metros."
         except ValueError:
             field_errors['altura'] = "Formato de altura inválido (solo números)."
 
         try:
             if 'temperatura' not in field_errors:
                 temperatura = float(form_data['temperatura'])
-                if not (30.0 <= temperatura <= 40.0):
-                    field_errors['temperatura'] = "La temperatura debe estar entre 35.0 y 42.0 °C."
+                if not (20.0 <= temperatura <= 40.0):
+                    field_errors['temperatura'] = "La temperatura debe estar entre 20.0 y 40.0 °C."
         except ValueError:
             field_errors['temperatura'] = "Formato de temperatura inválido."
 
