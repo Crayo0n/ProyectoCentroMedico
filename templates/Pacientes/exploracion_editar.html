@@ -22,43 +22,47 @@
 
                 <form method="POST">
                     <label for="fecha">Fecha:</label>
+
                     <input type="datetime-local" name="fecha" value="{{ cita.fecha }}" >
+
+                    <input type="date" name="fecha" value="{{ cita.fecha }}">
+
                     {% if errors.fecha %}
                     <small class="text-danger" style="color: red;">{{ errors.fecha }}</small>
                     {% endif %}
 
                     <label for="peso">Peso:</label>
-                    <input type="text" name="peso" value="{{ cita.peso }}" >
+                    <input type="text" name="peso" value="{{ cita.peso }}" placeholder="Valor en kg">
                     {% if errors.peso %}
                     <small class="text-danger" style="color: red;">{{ errors.peso }}</small>
                     {% endif %}
 
                     <label for="altura">Altura:</label>
-                    <input type="text" name="altura" value="{{ cita.altura }}" >
+                    <input type="text" name="altura" value="{{ cita.altura }}" placeholder="Valor en metros">
                     {% if errors.altura %}
                     <small class="text-danger" style="color: red;">{{ errors.altura }}</small>
                     {% endif %}
 
                     <label for="temperatura">Temperatura:</label>
-                    <input type="text" name="temperatura" value="{{ cita.temperatura }}" >
+                    <input type="text" name="temperatura" value="{{ cita.temperatura }}" placeholder="Valores entre 20° y 40° Celcius">
                     {% if errors.temperatura %}
                     <small class="text-danger" style="color: red;">{{ errors.temperatura }}</small>
                     {% endif %}
 
                     <label for="latidos">Latidos por minuto:</label>
-                    <input type="text" name="latidos" value="{{ cita.latidosmin }}" >
+                    <input type="text" name="latidos" value="{{ cita.latidosmin }}" placeholder="Valores entre 20lpm y 300lpm">
                     {% if errors.latidos %}
                     <small class="text-danger" style="color: red;">{{ errors.latidos }}</small>
                     {% endif %}
 
                     <label for="saturacion">Saturación de oxígeno:</label>
-                    <input type="text" name="saturacion" value="{{ cita.saturacionoxigeno }}" >
+                    <input type="text" name="saturacion" value="{{ cita.saturacionoxigeno }}" placeholder="Valor entre 80% y 100%">
                     {% if errors.saturacion %}
                     <small class="text-danger" style="color: red;">{{ errors.saturacion }}</small>
                     {% endif %}
 
                     <label for="glucosa">Glucosa:</label>
-                    <input type="text" name="glucosa" value="{{ cita.glucosa }}" >
+                    <input type="text" name="glucosa" value="{{ cita.glucosa }}" placeholder="Valor entre 40 y 150 mg/dL">
                     {% if errors.glucosa %}
                     <small class="text-danger" style="color: red;">{{ errors.glucosa }}</small>
                     {% endif %}
