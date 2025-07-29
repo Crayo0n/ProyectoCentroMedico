@@ -11,6 +11,7 @@ app = Flask(__name__)
 # Configuración MySQL
 app.config['MYSQL_HOST'] = "localhost"
 app.config['MYSQL_USER'] = "root"
+app.config['MYSQL_PASSWORD'] = "12345678"
 app.config['MYSQL_PASSWORD'] = "root"
 app.config['MYSQL_DB'] = "Clinica_DB"
 app.secret_key = 'mysecretkey'
@@ -57,7 +58,7 @@ def login():
         if medico:
             if password == medico['contrasena']:
                 session['idmedico'] = medico['idmedico']
-                session['nombre'] = medico['nombrecompleto']
+                session['nombre'] = medico['nombrecompleto'] 
                 session['rol'] = medico['nombre']
 
                 if medico['nombre'] == 'Admin':
@@ -345,7 +346,7 @@ def pacientes_agregar():
         else:
             try:
                 fechanacimiento_obj = datetime.strptime(fechanacimiento, '%Y-%m-%d').date()
-        
+            
                 if fechanacimiento_obj > date.today():
                     errores['fechanacimiento'] = 'La fecha de nacimiento no puede estar en el futuro.'
 
@@ -490,7 +491,6 @@ def guardar_exploracion(paciente_id):
         return redirect(url_for('pacientes'))
 
     if request.method == 'POST':
-        # --- 1. VALIDACIÓN DE CAMPOS VACÍOS ---
         required_fields = {
             'fecha': 'Fecha',
             'peso': 'Peso',
@@ -505,7 +505,6 @@ def guardar_exploracion(paciente_id):
             if not form_data.get(field_name) or str(form_data.get(field_name)).strip() == '':
                 field_errors[field_name] = f"{display_name} es obligatorio."
 
-        # --- 2. VALIDACIÓN DE RANGOS Y TIPOS ---
         try:
             if 'peso' not in field_errors:
                 peso = float(form_data['peso'])
@@ -558,7 +557,6 @@ def guardar_exploracion(paciente_id):
         if not fecha_str:
             field_errors['fecha'] = "La fecha es obligatoria."
         try:
-            # Convertir la fecha de string a formato DATETIME
             fecha = datetime.strptime(fecha_str, '%Y-%m-%dT%H:%M')
         except ValueError:
             field_errors['fecha'] = "Formato de fecha y hora inválido. Use YYYY-MM-DDTHH:MM."
@@ -570,7 +568,6 @@ def guardar_exploracion(paciente_id):
                                    form_data=form_data,
                                    field_errors=field_errors)
 
-        # --- SI TODO ES VÁLIDO ---
         try:
             cursor.execute("""
                 INSERT INTO citas (idpaciente, fecha, peso, altura, temperatura, latidosmin, saturacionoxigeno, glucosa)
@@ -703,6 +700,127 @@ def editar_exploracion(cita_id):
     return render_template('Pacientes/exploracion_editar.html', cita=cita, errors={})
 
 
+# Ruta para mostrar el formulario de diagnóstico y procesar el envío
+@app.route('/diagnostico/<int:cita_id>', methods=['GET', 'POST']) # Ruta unificada
+def crear_diagnostico(cita_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cita = None
+    diagnostico_existente = None
+    errors = {} 
+    form_data = {} 
+
+    try:
+        # Obtener los datos de la cita para mostrar en el formulario de diagnóstico
+        cursor.execute("""
+            SELECT c.idcita, c.fecha, p.nombrecompleto AS nombre_paciente, p.idpaciente
+            FROM citas c
+            JOIN pacientes p ON c.idpaciente = p.idpaciente
+            WHERE c.idcita = %s
+        """, (cita_id,))
+        cita = cursor.fetchone()
+
+        if not cita:
+            flash("Cita no encontrada para registrar el diagnóstico.", "error")
+            return redirect(url_for('pacientes'))
+
+        # Verificar si ya existe un diagnóstico para esta cita
+        cursor.execute("SELECT * FROM diagnosticos WHERE idcita = %s", (cita_id,))
+        diagnostico_existente = cursor.fetchone()
+
+    except MySQLdb.MySQLError as e:
+        flash(f"Error al cargar datos iniciales del diagnóstico: {e}", "error")
+        return redirect(url_for('pacientes'))
+
+
+    if request.method == 'POST':
+        # Obtener los datos del formulario con los nombres de tu HTML
+        sintomas = request.form.get('sintomas', '').strip()
+        diagnostico_texto = request.form.get('diagnostico', '').strip()
+        tratamiento_texto = request.form.get('tratamiento', '').strip()
+        requiere_estudios_str = request.form.get('estudios', '').strip()
+
+        # Almacenar datos del formulario para pre-rellenar en caso de error
+        form_data = {
+            'sintomas': sintomas,
+            'diagnostico': diagnostico_texto,
+            'tratamiento': tratamiento_texto,
+            'estudios': requiere_estudios_str
+        }
+
+        requiere_estudios = 1 if requiere_estudios_str.lower() == 'si' else 0
+
+        # Validaciones
+        if not sintomas:
+            errors['sintomas'] = "Los síntomas son obligatorios."
+        if not diagnostico_texto:
+            errors['diagnostico'] = "El diagnóstico es obligatorio."
+        if not tratamiento_texto:
+            errors['tratamiento'] = "El tratamiento es obligatorio."
+        if not requiere_estudios_str:
+            errors['estudios'] = "¿Requiere estudios? es obligatorio."
+
+        if errors:
+            return render_template('Pacientes/diagnostico_paciente.html', 
+                                   cita=cita, 
+                                   diagnostico=diagnostico_existente,
+                                   form_data=form_data, 
+                                   errors=errors)
+        
+        try:
+            idpaciente = cita['idpaciente']
+            if diagnostico_existente:
+
+                cursor.execute("""
+                    UPDATE diagnosticos
+                    SET sintomas = %s, diagnostico_texto = %s, tratamiento_texto = %s, 
+                        requiere_estudios = %s, fecha_diagnostico = NOW()
+                    WHERE iddiagnostico = %s
+                """, (sintomas, diagnostico_texto, tratamiento_texto, 
+                      requiere_estudios, diagnostico_existente['iddiagnostico']))
+                flash("Diagnóstico actualizado correctamente.", "success")
+            else:
+                cursor.execute("""
+                    INSERT INTO diagnosticos (idcita, sintomas, diagnostico_texto, tratamiento_texto, requiere_estudios)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (cita_id, sintomas, diagnostico_texto, tratamiento_texto, requiere_estudios))
+                flash("Diagnóstico guardado correctamente.", "success")
+            
+            mysql.connection.commit()
+            return redirect(url_for('citas_paciente', paciente_id=idpaciente))
+
+        except MySQLdb.IntegrityError as e:
+            mysql.connection.rollback()
+            flash(f"Error de integridad de base de datos (posible duplicado): {e}", "error")
+            return render_template('Pacientes/diagnostico_paciente.html', 
+                                   cita=cita, 
+                                   diagnostico=diagnostico_existente, 
+                                   form_data=form_data, 
+                                   errors=errors) #
+        except MySQLdb.MySQLError as e:
+            mysql.connection.rollback()
+            flash(f"Error de base de datos al guardar/actualizar el diagnóstico: {e}", "error")
+            return render_template('Pacientes/diagnostico_paciente.html', 
+                                   cita=cita, 
+                                   diagnostico=diagnostico_existente, 
+                                   form_data=form_data, 
+                                   errors=errors)
+        finally:
+            cursor.close()
+    
+
+    if diagnostico_existente:
+        form_data = {
+            'sintomas': diagnostico_existente.get('sintomas', ''),
+            'diagnostico': diagnostico_existente.get('diagnostico_texto', ''),
+            'tratamiento': diagnostico_existente.get('tratamiento_texto', ''),
+            'estudios': 'si' if diagnostico_existente.get('requiere_estudios') else 'no'
+        }
+
+    return render_template('Pacientes/diagnostico_paciente.html', 
+                           cita=cita, 
+                           diagnostico=diagnostico_existente, 
+                           form_data=form_data, 
+                           errors=errors)
 
 
 
@@ -710,7 +828,7 @@ def editar_exploracion(cita_id):
 # Ruta para previsualizar Recetas
 @app.route('/receta/preview/<int:paciente_id>')
 def receta_preview(paciente_id):
-    paciente = get_paciente_by_id(paciente_id)
+    paciente = get_paciente_by_id(paciente_id) 
     pdf_path = generar_pdf_receta(paciente, paciente_id)
     return render_template('Pacientes/receta.html', paciente_id=paciente_id)
 
@@ -741,7 +859,11 @@ def generar_pdf_receta(paciente, paciente_id):
 
     return pdf_path
 
+# Esta función es un placeholder y no obtiene datos de la BD.
+# Deberías usar 'get_paciente_by_id_from_db' o una función similar que consulte tu BD.
 def get_paciente_by_id(paciente_id):
+    # Esto es solo un ejemplo estático.
+    # Idealmente, deberías obtener los datos reales del paciente y su receta de la base de datos.
     return {
         "nombre": "Juan Pérez",
         "medicamento": "Paracetamol",
@@ -749,6 +871,7 @@ def get_paciente_by_id(paciente_id):
         "frecuencia": "Cada 8 horas",
         "observaciones": "Tomar después de las comidas."
     }
+
 def get_paciente_by_id_from_db(paciente_id):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("""
@@ -759,7 +882,6 @@ def get_paciente_by_id_from_db(paciente_id):
     paciente = cursor.fetchone()
     cursor.close()
     return paciente
-
 
 
 if __name__ == '__main__':

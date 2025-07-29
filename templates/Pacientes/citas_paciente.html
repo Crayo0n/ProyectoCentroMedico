@@ -83,7 +83,7 @@
                                 <button class="btn-editar">Editar</button>
                             </a>
                             
-                            <a href="#" class="btn-explorar">Diagnóstico</a>
+                            <a href="{{ url_for('crear_diagnostico', cita_id=cita.idcita) }}" class="btn-explorar">Diagnóstico</a>
                             <a href="#" class="btn-descargar">Descargar receta</a>
                             <form method="POST" action="#" style="display:inline;">
                                 <button type="submit" class="btn-eliminar">Eliminar</button>
