@@ -13,12 +13,6 @@
             <div class="logo-wrapper">
                 <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
             </div>
-            <div class="sidebar-bottom">
-                <a href="{{ url_for('Salir') }}">
-                    <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir"
-                        class="sidebar-iconSalir logout">
-                </a>
-            </div>
         </aside>
 
         <div class="form-container">
@@ -38,25 +32,26 @@
                 {% endwith %}
 
                 <form method="POST" action="{{ url_for('crear_diagnostico', cita_id=cita.idcita) }}">
-                    <div class="form-group">
+                    
+                    
                         <label for="sintomas">Síntomas:</label>
-                        <textarea id="sintomas" name="sintomas" required>{{ form_data.sintomas if form_data.sintomas else (diagnostico.sintomas if diagnostico else '') }}</textarea>
+                        <textarea id="sintomas" name="sintomas" >{{ form_data.sintomas if form_data.sintomas else (diagnostico.sintomas if diagnostico else '') }}</textarea>
                         {% if errors.sintomas %}<small class="text-danger" style="color: red;">{{ errors.sintomas }}</small>{% endif %}
-                    </div>
+                    
 
-                    <div class="form-group">
+                    
                         <label for="diagnostico">Diagnóstico:</label>
-                        <textarea id="diagnostico" name="diagnostico" required>{{ form_data.diagnostico if form_data.diagnostico else (diagnostico.diagnostico_texto if diagnostico else '') }}</textarea>
+                        <textarea id="diagnostico" name="diagnostico" >{{ form_data.diagnostico if form_data.diagnostico else (diagnostico.diagnostico if diagnostico else '') }}</textarea>
                         {% if errors.diagnostico %}<small class="text-danger" style="color: red;">{{ errors.diagnostico }}</small>{% endif %}
-                    </div>
+                  
 
-                    <div class="form-group">
+                    
                         <label for="tratamiento">Tratamiento:</label>
-                        <textarea id="tratamiento" name="tratamiento" required>{{ form_data.tratamiento if form_data.tratamiento else (diagnostico.tratamiento_texto if diagnostico else '') }}</textarea>
+                        <textarea id="tratamiento" name="tratamiento" >{{ form_data.tratamiento if form_data.tratamiento else (diagnostico.tratamiento if diagnostico else '') }}</textarea>
                         {% if errors.tratamiento %}<small class="text-danger" style="color: red;">{{ errors.tratamiento }}</small>{% endif %}
-                    </div>
+                    
 
-                    <div class="form-group">
+                    
                         <label for="estudios">¿Requiere estudios?</label>
                         <div class="estudios">
                             <label>
@@ -69,7 +64,7 @@
                             </label>
                         </div>
                         {% if errors.estudios %}<small class="text-danger" style="color: red;">{{ errors.estudios }}</small>{% endif %}
-                    </div>
+                    
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Guardar</button>

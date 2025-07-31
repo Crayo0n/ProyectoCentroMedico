@@ -1,162 +1,128 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "dashboards.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Pacientes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/pacientes.css') }}">
-</head>
+{% block title %}Pacientes{% endblock %}
 
-<body>
-    <div class="container">
-        <!-- Barra lateral -->
-        <aside class="sidebar">
-            <div class="sidebar-top">
-                <div class="logo-wrapper">
-                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-                </div>
-                <a href="{{ url_for('pacientes') }}">
-                    <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
-                </a>
-                {% if session['rol'] == 'Admin' %}
-                <a href="{{ url_for('doctores') }}">
-                    <img src="{{ url_for('static', filename='img/doctores.png') }}" class="sidebar-icon" alt="Doctores">
-                </a>
-                {% endif %}
+{% block header %}
+    <h1>Pacientes</h1>
+    <!-- Mostrar mensajes de flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
             </div>
+        {% endif %}
+    {% endwith %}
 
-            <div class="sidebar-bottom">
-                <a href="{{ url_for('Salir') }}">
-                    <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir"
-                        class="sidebar-iconSalir logout">
+    <a href="{{ url_for('pacientes_agregar') }}" class="btn-agregar">Agregar</a>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/pacientes.css') }}">
+{% endblock %}
+
+{% block content %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Fecha Nacimiento</th>
+            <th>Enfermedades</th>
+            <th>Alergias</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for paciente in pacientes %}
+        <tr>
+            <td>{{ paciente.idpaciente }}</td>
+            <td>{{ paciente.nombrecompleto }}</td>
+            <td>{{ paciente.fechanacimiento }}</td>
+            <td>{{ paciente.enfermedadescronicas }}</td>
+            <td>{{ paciente.alergias }}</td>
+            <td>
+                <!-- Corregido el URL para que pase el paciente_id -->
+                <a href="{{ url_for('citas_paciente', paciente_id=paciente.idpaciente) }}">
+                    <button class="btn-citas">Citas</button>
                 </a>
 
-            </div>
-        </aside>
+                <a href="{{ url_for('pacientes_editar', paciente_id=paciente.idpaciente) }}">
+                    <button class="btn-editar">Editar</button>
+                </a>
+                <a href="{{ url_for('guardar_exploracion', paciente_id=paciente.idpaciente) }}">
+                    <button type="button" class="btn-explorar">Exploración</button>
+                </a>
 
-        <!-- Main content -->
-        <main class="main">
-            <header class="header">
-                <h1>Pacientes</h1>
-                <!-- Mostrar mensajes de flash -->
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                {% endwith %}
+                <!-- Formulario oculto por paciente -->
+                <form id="deleteFormPaciente-{{ paciente.idpaciente }}" method="POST"
+                    action="{{ url_for('pacientes_eliminar', paciente_id=paciente.idpaciente) }}" style="display:none;">
+                </form>
 
-                <a href="{{ url_for('pacientes_agregar') }}" class="btn-agregar">Agregar</a>
-            </header>
+                <!-- Botón que activa el modal -->
+                <button type="button" class="btn-eliminar"
+                    onclick="showDeleteConfirmationPaciente({{ paciente.idpaciente }})">
+                    Eliminar
+                </button>
+
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6">No se encontraron pacientes.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Fecha Nacimiento</th>
-                        <th>Enfermedades</th>
-                        <th>Alergias</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for paciente in pacientes %}
-                    <tr>
-                        <td>{{ paciente.idpaciente }}</td>
-                        <td>{{ paciente.nombrecompleto }}</td>
-                        <td>{{ paciente.fechanacimiento }}</td>
-                        <td>{{ paciente.enfermedadescronicas }}</td>
-                        <td>{{ paciente.alergias }}</td>
-                        <td>
-                            <!-- Corregido el URL para que pase el paciente_id -->
-                            <a href="{{ url_for('citas_paciente', paciente_id=paciente.idpaciente) }}">
-                                <button class="btn-citas">Citas</button>
-                            </a>
-
-                            <a href="{{ url_for('pacientes_editar', paciente_id=paciente.idpaciente) }}">
-                                <button class="btn-editar">Editar</button>
-                            </a>
-                            <a href="{{ url_for('guardar_exploracion', paciente_id=paciente.idpaciente) }}">
-                                <button type="button" class="btn-explorar">Exploración</button>
-                            </a>
-
-                            <!-- Formulario oculto por paciente -->
-                            <form id="deleteFormPaciente-{{ paciente.idpaciente }}" method="POST"
-                                action="{{ url_for('pacientes_eliminar', paciente_id=paciente.idpaciente) }}"
-                                style="display:none;"></form>
-
-                            <!-- Botón que activa el modal -->
-                            <button type="button" class="btn-eliminar"
-                                onclick="showDeleteConfirmationPaciente({{ paciente.idpaciente }})">
-                                Eliminar
-                            </button>
-
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6">No se encontraron pacientes.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </main>
-    </div>
-
-    <!-- Modal de Confirmación para Pacientes -->
-    <div id="confirmationModalPaciente" class="modal">
-        <div class="modal-content">
-            <h3>Confirmar Eliminación</h3>
-            <p>¿Estás seguro de que deseas eliminar este paciente?</p>
-            <div class="modal-buttons">
-                <button id="confirmDeleteBtnPaciente" class="btn-confirm">Eliminar</button>
-                <button id="cancelDeleteBtnPaciente" class="btn-cancel">Cancelar</button>
-            </div>
+<!-- Modal de Confirmación para Pacientes -->
+<div id="confirmationModalPaciente" class="modal">
+    <div class="modal-content">
+        <h3>Confirmar Eliminación</h3>
+        <p>¿Estás seguro de que deseas eliminar este paciente?</p>
+        <div class="modal-buttons">
+            <button id="confirmDeleteBtnPaciente" class="btn-confirm">Eliminar</button>
+            <button id="cancelDeleteBtnPaciente" class="btn-cancel">Cancelar</button>
         </div>
     </div>
+</div>
 
 
 
-    <script>
-        let currentPacienteIdToDelete = null;
-        const confirmationModalPaciente = document.getElementById('confirmationModalPaciente');
-        const confirmDeleteBtnPaciente = document.getElementById('confirmDeleteBtnPaciente');
-        const cancelDeleteBtnPaciente = document.getElementById('cancelDeleteBtnPaciente');
+<script>
+    let currentPacienteIdToDelete = null;
+    const confirmationModalPaciente = document.getElementById('confirmationModalPaciente');
+    const confirmDeleteBtnPaciente = document.getElementById('confirmDeleteBtnPaciente');
+    const cancelDeleteBtnPaciente = document.getElementById('cancelDeleteBtnPaciente');
 
-        function showDeleteConfirmationPaciente(pacienteId) {
-            currentPacienteIdToDelete = pacienteId;
-            confirmationModalPaciente.style.display = 'flex';
-        }
+    function showDeleteConfirmationPaciente(pacienteId) {
+        currentPacienteIdToDelete = pacienteId;
+        confirmationModalPaciente.style.display = 'flex';
+    }
 
-        confirmDeleteBtnPaciente.onclick = function () {
-            if (currentPacienteIdToDelete) {
-                const form = document.getElementById(`deleteFormPaciente-${currentPacienteIdToDelete}`);
-                if (form) {
-                    form.submit();
-                }
+    confirmDeleteBtnPaciente.onclick = function () {
+        if (currentPacienteIdToDelete) {
+            const form = document.getElementById(`deleteFormPaciente-${currentPacienteIdToDelete}`);
+            if (form) {
+                form.submit();
             }
-            confirmationModalPaciente.style.display = 'none';
         }
+        confirmationModalPaciente.style.display = 'none';
+    }
 
-        cancelDeleteBtnPaciente.onclick = function () {
+    cancelDeleteBtnPaciente.onclick = function () {
+        confirmationModalPaciente.style.display = 'none';
+        currentPacienteIdToDelete = null;
+    }
+
+    window.onclick = function (event) {
+        if (event.target == confirmationModalPaciente) {
             confirmationModalPaciente.style.display = 'none';
             currentPacienteIdToDelete = null;
         }
-
-        window.onclick = function (event) {
-            if (event.target == confirmationModalPaciente) {
-                confirmationModalPaciente.style.display = 'none';
-                currentPacienteIdToDelete = null;
-            }
-        }
-    </script>
-
-</body>
-
-</html>
+    }
+</script>
+{% endblock %}

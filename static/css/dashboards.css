@@ -1,0 +1,98 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #d9d9d9;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Main content */
+.main {
+    flex-grow: 1;
+    padding: 30px;
+    background-color: #d9d9d9;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    color: #1565c0;
+    font-size: 40px;
+}
+
+h3 {
+    color: #1565c0;
+    font-size: 20px;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* Barra lateral */
+.sidebar {
+    position:static; 
+    background-color: #fafafa;
+    padding: 20px 10px;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;  
+    height: 100vh;
+}
+
+.sidebar-icon {
+    width: 60px;
+    height: 80px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.sidebar-iconLogo {
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.logo-wrapper {
+    width: 70px;
+    height: 70px;
+    background-color: #d6eaff; 
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar-bottom,.sidebar-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.sidebar-iconSalir {
+    width: 70px;
+    height: 75px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.sidebar-icon:hover, .sidebar-iconLogo:hover, .sidebar-iconSalir:hover  {
+    transform: scale(1.1);
+}
+
+.logout {
+    margin-top: auto;
+}

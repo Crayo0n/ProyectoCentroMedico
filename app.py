@@ -11,8 +11,7 @@ app = Flask(__name__)
 # Configuración MySQL
 app.config['MYSQL_HOST'] = "localhost"
 app.config['MYSQL_USER'] = "root"
-app.config['MYSQL_PASSWORD'] = "12345678"
-app.config['MYSQL_PASSWORD'] = "root"
+app.config['MYSQL_PASSWORD'] = "U41578780o"
 app.config['MYSQL_DB'] = "Clinica_DB"
 app.secret_key = 'mysecretkey'
 
@@ -724,7 +723,7 @@ def crear_diagnostico(cita_id):
             return redirect(url_for('pacientes'))
 
         # Verificar si ya existe un diagnóstico para esta cita
-        cursor.execute("SELECT * FROM diagnosticos WHERE idcita = %s", (cita_id,))
+        cursor.execute("SELECT * FROM diagnostico WHERE idcita = %s", (cita_id,))
         diagnostico_existente = cursor.fetchone()
 
     except MySQLdb.MySQLError as e:
@@ -771,16 +770,16 @@ def crear_diagnostico(cita_id):
             if diagnostico_existente:
 
                 cursor.execute("""
-                    UPDATE diagnosticos
-                    SET sintomas = %s, diagnostico_texto = %s, tratamiento_texto = %s, 
-                        requiere_estudios = %s, fecha_diagnostico = NOW()
+                    UPDATE diagnostico
+                    SET sintomas = %s, diagnostico = %s, tratamiento = %s, 
+                        estudios = %s
                     WHERE iddiagnostico = %s
                 """, (sintomas, diagnostico_texto, tratamiento_texto, 
                       requiere_estudios, diagnostico_existente['iddiagnostico']))
                 flash("Diagnóstico actualizado correctamente.", "success")
             else:
                 cursor.execute("""
-                    INSERT INTO diagnosticos (idcita, sintomas, diagnostico_texto, tratamiento_texto, requiere_estudios)
+                    INSERT INTO diagnostico (idcita, sintomas, diagnostico, tratamiento, estudios)
                     VALUES (%s, %s, %s, %s, %s)
                 """, (cita_id, sintomas, diagnostico_texto, tratamiento_texto, requiere_estudios))
                 flash("Diagnóstico guardado correctamente.", "success")

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Centro Médico{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboards.css') }}">
+    {% block styles %}{% endblock %}
+</head>
+
+<body>
+    <div class="container">
+        <!-- Barra lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <div class="logo-wrapper">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+                </div>
+                <a href="{{ url_for('pacientes') }}">
+                    <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
+                </a>
+                {% if session['rol'] == 'Admin' %}
+                <a href="{{ url_for('doctores') }}">
+                    <img src="{{ url_for('static', filename='img/doctores.png') }}" class="sidebar-icon" alt="Doctores">
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="sidebar-bottom">
+                <a href="{{ url_for('Salir') }}">
+                    <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir"
+                        class="sidebar-iconSalir logout">
+                </a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                {% block header %}{% endblock %}
+            </header>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+
+</html>
