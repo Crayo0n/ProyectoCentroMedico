@@ -1,21 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "formularios_base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Editar médico</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/Medicos/AgregarEditarMedico.css') }}">
-</head>
+{% block title %}Editar Médico{% endblock %}
 
-<body>
-    <div class="container">
-        <aside class="sidebar">
-            <div class="logo-wrapper">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-            </div>
-        </aside>
-
-        <div class="form-container">
+{% block content %}
             <h1>Editar médico</h1>
 
             <div class="form-box">
@@ -70,6 +57,4 @@
             </div>
         </div>
     </div>
-</body>
-
-</html>
+{% endblock %}

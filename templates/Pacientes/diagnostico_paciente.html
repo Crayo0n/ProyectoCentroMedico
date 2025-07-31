@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnóstico del Paciente</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/diagnostico_paciente.css') }}">
-</head>
-<body>
-    <div class="container">
-        <!-- Barra lateral -->
-        <aside class="sidebar">
-            <div class="logo-wrapper">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-            </div>
-        </aside>
+{% extends "formularios_base.html" %}
 
-        <div class="form-container">
-            <div class="form-box">
+{% block title %}Exploración del Paciente{% endblock %}
+
+{% block content %}
                 <h1>Diagnóstico para Cita #{{ cita.idcita }}</h1>
                 <h2>Paciente: {{ cita.nombre_paciente }}</h2>
                 <p>Fecha de exploración: {{ cita.fecha.strftime('%Y-%m-%d %H:%M') }}</p>
@@ -56,11 +42,11 @@
                         <div class="estudios">
                             <label>
                                 <input type="radio" name="estudios" value="si" 
-                                    {% if (form_data and form_data.estudios == 'si') or (not form_data and diagnostico and diagnostico.requiere_estudios) %}checked{% endif %} required> Sí
+                                    {% if (form_data and form_data.estudios == 'si') or (not form_data and diagnostico and diagnostico.requiere_estudios) %}checked{% endif %} > Sí
                             </label>
                             <label>
                                 <input type="radio" name="estudios" value="no" 
-                                    {% if (form_data and form_data.estudios == 'no') or (not form_data and diagnostico and not diagnostico.requiere_estudios) %}checked{% endif %} required> No
+                                    {% if (form_data and form_data.estudios == 'no') or (not form_data and diagnostico and not diagnostico.requiere_estudios) %}checked{% endif %} > No
                             </label>
                         </div>
                         {% if errors.estudios %}<small class="text-danger" style="color: red;">{{ errors.estudios }}</small>{% endif %}
@@ -74,5 +60,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

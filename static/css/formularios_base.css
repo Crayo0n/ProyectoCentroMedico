@@ -10,7 +10,8 @@ body {
     height: 100%;
 }
 
-/* Barra lateral */
+
+/* Barra Lateral */
 .sidebar {
     background-color: #fafafa;
     padding: 20px 10px;
@@ -21,11 +22,14 @@ body {
     gap: 50px;
 }
 
-.sidebar-icon {
-    width: 60px;
-    height: 80px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
+.logo-wrapper {
+    width: 55px;
+    height: 55px;
+    background-color: #d6eaff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidebar-iconLogo {
@@ -35,24 +39,27 @@ body {
     transition: transform 0.2s ease;
 }
 
-.logo-wrapper {
-    width: 70px;
-    height: 70px;
-    background-color: #d6eaff; 
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+h1 {
+    font-size: 50px;  
+    color: #1565c0;
+    margin-bottom: 40px;
+    font-weight: bold;
 }
 
-
-.sidebar-icon:hover, .sidebar-iconLogo:hover  {
-    transform: scale(1.1);
+h2 {
+    font-size: 30px;
+    color: #1565c0;
+    margin-bottom: 40px;
+    font-weight: bold;
 }
 
-.logout {
-    margin-top: auto;
+p {
+    font-size: 20px;
+    color: #1565c0;
+    margin-bottom: 40px;
+    font-weight: bold;
 }
+
 
 /* Formulario */
 .form-container {
@@ -99,6 +106,23 @@ input, select {
     outline: none;
     box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
 }
+
+textarea {
+    width: 100%;
+    padding: 15px;  
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    font-size: 18px;  
+    margin-bottom: 20px;  
+    outline: none;
+    resize: vertical;  
+}
+
+textarea::placeholder {
+    font-style: italic;
+    color: #999;
+}
+
 
 .form-buttons {
     margin-top: 30px;

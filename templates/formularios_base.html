@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Centro Médico{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/formularios_base.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Barra lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <div class="logo-wrapper">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
+                </div>
+        </aside>
+
+        <div class="form-container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</body>
+
+</html>

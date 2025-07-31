@@ -1,34 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "formularios_base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Exploración del paciente</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/AgregarEditarExploracion.css') }}">
-</head>
+{% block title %}Exploración del Paciente{% endblock %}
 
-<body>
-    <div class="container">
-        <!-- Barra lateral -->
-        <aside class="sidebar">
-            <div class="logo-wrapper">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-            </div>
-        </aside>
-
-        <div class="form-container">
-            <div class="form-box">
+{% block content %}
                 <h1>Exploración del paciente</h1>
 
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                <ul class="flash-messages">
-                    {% for category, message in messages %}
-                    <li class="flash-message {{ category }}">{{ message | safe }}</li> {# | safe para permitir <br> #}
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                {% endwith %}
 
                 <form method="POST" action="{{ url_for('guardar_exploracion', paciente_id=paciente.idpaciente) }}">
 
@@ -110,6 +86,4 @@
             </div>
         </div>
     </div>
-</body>
-
-</html>
+{% endblock %}

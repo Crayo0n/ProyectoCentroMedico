@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "formularios_base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Editar exploración del paciente</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/Pacientes/AgregarEditarExploracion.css') }}">
-</head>
+{% block title %}Editar Exploración del Paciente{% endblock %}
 
-<body>
-    <div class="container">
-        <!-- Barra lateral -->
-        <aside class="sidebar">
-            <div class="logo-wrapper">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
-            </div>
-        </aside>
-
-        <div class="form-container">
-            <div class="form-box">
+{% block content %}
                 <h1>Editar exploración del paciente</h1>
 
                 <form method="POST">
@@ -72,6 +57,4 @@
             </div>
         </div>
     </div>
-</body>
-
-</html>
+{% endblock %}
