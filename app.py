@@ -610,7 +610,7 @@ def citas_paciente(paciente_id):
         cursor.execute("""
             SELECT idcita, fecha, peso, altura, temperatura, latidosmin, saturacionoxigeno, glucosa
             FROM citas
-            WHERE idpaciente = %s
+            WHERE idpaciente = %s AND status=1
             ORDER BY fecha DESC
         """, (paciente_id,))
         citas = cursor.fetchall()
@@ -697,6 +697,34 @@ def editar_exploracion(cita_id):
             cursor.close()
 
     return render_template('Pacientes/exploracion_editar.html', cita=cita, errors={})
+
+#Ruta para Eliminar Cita
+@app.route('/eliminar_exploracion/<int:cita_id>', methods=['POST'])
+def eliminar_exploracion(cita_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    try:
+        # Obtener el ID del paciente desde la cita
+        cursor.execute("SELECT idpaciente FROM citas WHERE idcita = %s", (cita_id,))
+        paciente_data = cursor.fetchone()
+        
+        if paciente_data:
+            paciente_id = paciente_data['idpaciente']
+            cursor.execute("UPDATE citas SET status = 0 WHERE idcita = %s", (cita_id,))
+            mysql.connection.commit()
+            flash("Cita eliminada correctamente.", "success")
+        else:
+            flash("Cita no encontrada.", "error")
+
+    except MySQLdb.MySQLError as e:
+        mysql.connection.rollback()
+        flash(f"Error al eliminar la cita: {e}", "error")
+    finally:
+        cursor.close()
+
+    # Redirigir a la página de citas del paciente
+    return redirect(url_for('citas_paciente', paciente_id=paciente_id))
+
+
 
 
 # Ruta para mostrar el formulario de diagnóstico y procesar el envío

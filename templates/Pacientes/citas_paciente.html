@@ -3,18 +3,18 @@
 {% block title %}Citas del Paciente{% endblock %}
 
 {% block header %}
-    <h1>Citas del paciente </h1>
+<h1>Citas del paciente </h1>
 
-    <!-- Mostrar mensajes de flash -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-            {% for category, message in messages %}
-                <div class="flash {{ category }}">{{ message }}</div>
-            {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+<!-- Mostrar mensajes de flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-messages">
+    {% for category, message in messages %}
+    <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
 {% endblock %}
 
 {% block styles %}
@@ -23,54 +23,102 @@
 
 
 {% block content %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Fecha</th>
-                        <th>Peso</th>
-                        <th>Altura</th>
-                        <th>Temperatura</th>
-                        <th>Latidos por min</th>
-                        <th>Saturación</th>
-                        <th>Glucosa</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if exploraciones %}
-                    {% for cita in exploraciones %}
-                    <tr>
-                        <td>{{ cita.idcita }}</td>
-                        <td>{{ cita.fecha }}</td>
-                        <td>{{ cita.peso }} kg</td>
-                        <td>{{ cita.altura }} m</td>
-                        <td>{{ cita.temperatura }} °C</td>
-                        <td>{{ cita.latidosmin }}lpm</td>
-                        <td>{{ cita.saturacionoxigeno }}%</td>
-                        <td>{{ cita.glucosa }}mg/dL</td>
-                        <td>
-                            <a href="{{ url_for('editar_exploracion', cita_id=cita.idcita) }}">
-                                <button class="btn-editar">Editar</button>
-                            </a>
-                            
-                            <a href="{{ url_for('crear_diagnostico', cita_id=cita.idcita) }}" >
-                                <button class="btn-explorar"> Diagnóstico </button>
-                            </a>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Peso</th>
+            <th>Altura</th>
+            <th>Temperatura</th>
+            <th>Latidos por min</th>
+            <th>Saturación</th>
+            <th>Glucosa</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if exploraciones %}
+        {% for cita in exploraciones %}
+        <tr>
+            <td>{{ cita.idcita }}</td>
+            <td>{{ cita.fecha }}</td>
+            <td>{{ cita.peso }} kg</td>
+            <td>{{ cita.altura }} m</td>
+            <td>{{ cita.temperatura }} °C</td>
+            <td>{{ cita.latidosmin }}lpm</td>
+            <td>{{ cita.saturacionoxigeno }}%</td>
+            <td>{{ cita.glucosa }}mg/dL</td>
+            <td>
+                <a href="{{ url_for('editar_exploracion', cita_id=cita.idcita) }}">
+                    <button class="btn-editar">Editar</button>
+                </a>
 
-                            <a href="#" class="btn-descargar">Descargar receta</a>
-                            <form method="POST" action="#" style="display:inline;">
-                                <button type="submit" class="btn-eliminar">Eliminar</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% else %}
-                    <tr>
-                        <td colspan="8">Este paciente no tiene exploraciones registradas.</td>
-                    </tr>
-                    {% endif %}
-                </tbody>
+                <a href="{{ url_for('crear_diagnostico', cita_id=cita.idcita) }}">
+                    <button class="btn-explorar"> Diagnóstico </button>
+                </a>
 
-            </table>
+                <a href="#" class="btn-descargar">Descargar receta</a>
+
+
+                <form id="deleteFormCita-{{ cita.idcita }}" method="POST" action="{{ url_for('eliminar_exploracion', cita_id=cita.idcita) }}" style="display:inline;">
+                        <button type="button" class="btn-eliminar" onclick="showDeleteConfirmation({{ cita.idcita }})">Eliminar</button>
+                    </form>
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="8">Este paciente no tiene exploraciones registradas.</td>
+        </tr>
+        {% endif %}
+    </tbody>
+
+</table>
+
+
+
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar esta cita?</p>
+        <div class="modal-buttons">
+            <button id="confirmDeleteBtn" class="btn-confirm">Sí, Eliminar</button>
+            <button id="cancelDeleteBtn" class="btn-cancel">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+        let currentCitaIdToDelete = null;
+        const confirmationModal = document.getElementById('confirmationModal');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+
+        function showDeleteConfirmation(citaId) {
+            currentCitaIdToDelete = citaId;
+            confirmationModal.style.display = 'flex';
+        }
+
+        confirmDeleteBtn.onclick = function () {
+            if (currentCitaIdToDelete) {
+                const form = document.getElementById(`deleteFormCita-${currentCitaIdToDelete}`);
+                if (form) {
+                    form.submit();
+                }
+            }
+            confirmationModal.style.display = 'none';
+        }
+
+        cancelDeleteBtn.onclick = function () {
+            confirmationModal.style.display = 'none';
+            currentCitaIdToDelete = null;
+        }
+
+        window.onclick = function (event) {
+            if (event.target == confirmationModal) {
+                confirmationModal.style.display = 'none';
+                currentCitaIdToDelete = null;
+            }
+        }
+    </script>
 {% endblock %}

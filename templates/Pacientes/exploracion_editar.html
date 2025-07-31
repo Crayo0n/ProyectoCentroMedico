@@ -22,11 +22,7 @@
 
                 <form method="POST">
                     <label for="fecha">Fecha:</label>
-
                     <input type="datetime-local" name="fecha" value="{{ cita.fecha }}" >
-
-                    <input type="date" name="fecha" value="{{ cita.fecha }}">
-
                     {% if errors.fecha %}
                     <small class="text-danger" style="color: red;">{{ errors.fecha }}</small>
                     {% endif %}
