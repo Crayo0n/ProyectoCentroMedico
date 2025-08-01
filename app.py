@@ -5,6 +5,7 @@ import os
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from datetime import datetime, date
+import re
 
 app = Flask(__name__)
 
@@ -851,64 +852,232 @@ def crear_diagnostico(cita_id):
 
 
 
+# --- Funciones de Receta 
+def generar_pdf_receta(cita_id):
 
-# Ruta para previsualizar Recetas
-@app.route('/receta/preview/<int:paciente_id>')
-def receta_preview(paciente_id):
-    paciente = get_paciente_by_id(paciente_id) 
-    pdf_path = generar_pdf_receta(paciente, paciente_id)
-    return render_template('Pacientes/receta.html', paciente_id=paciente_id)
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    receta_data = {}
 
-@app.route('/admin/receta/descargar/<int:paciente_id>')
-def descargar_receta(paciente_id):
-    paciente = get_paciente_by_id(paciente_id)
-    pdf_path = generar_pdf_receta(paciente, paciente_id)
-    return send_file(pdf_path, as_attachment=True, download_name=f"receta_{paciente['nombre']}.pdf", mimetype='application/pdf')
+    try:
+        cursor.execute("""
+        SELECT
+            p.nombrecompleto AS nombre_paciente,
+            p.fechanacimiento AS fecha_nacimiento_paciente,
+            p.enfermedadescronicas,
+            p.alergias,
+            p.antecedentesfam,
+            c.fecha AS fecha_cita,
+            c.peso,
+            c.altura,
+            c.temperatura,
+            c.latidosmin,
+            c.saturacionoxigeno,
+            c.glucosa,
+            d.sintomas,
+            d.diagnostico,
+            d.tratamiento,
+            d.estudios,
+            m.nombrecompleto AS nombre_medico,
+            m.cedulaprofesional,
+            m.correo AS correo_medico
+        FROM citas c
+        JOIN pacientes p ON c.idpaciente = p.idpaciente
+        LEFT JOIN diagnostico d ON c.idcita = d.idcita
+        JOIN medicos m ON p.idmedico = m.idmedico
+        WHERE c.idcita = %s
+        """, (cita_id,))
 
-def generar_pdf_receta(paciente, paciente_id):
-    pdf_dir = os.path.join(os.getcwd(), 'static', 'pdfs')
-    if not os.path.exists(pdf_dir):
-        os.makedirs(pdf_dir)
+        receta_data = cursor.fetchone()
 
-    pdf_path = os.path.join(pdf_dir, f"receta_{paciente_id}.pdf")
+        if not receta_data:
+            return None, "No se encontraron datos de la cita o diagnóstico para la receta."
+
+    except MySQLdb.MySQLError as e:
+        return None, f"Error al obtener datos para el PDF de la receta: {e}"
+    finally:
+        cursor.close()
+
+    pdf_dir = os.path.join(app.root_path, 'static', 'pdfs')
+    os.makedirs(pdf_dir, exist_ok=True)
+
+    nombre_paciente_saneado = re.sub(r'[^\w\s-]', '', receta_data['nombre_paciente']).strip()
+    nombre_paciente_saneado = re.sub(r'[\s]+', '_', nombre_paciente_saneado)
+
+    pdf_filename = f"receta_{nombre_paciente_saneado}_{cita_id}.pdf"
+    pdf_path = os.path.join(pdf_dir, pdf_filename)
 
     c = canvas.Canvas(pdf_path, pagesize=letter)
     c.setFont("Helvetica", 12)
+    y_position = 680
+    line_height = 14
 
-    c.drawString(100, 750, f"Paciente: {paciente['nombre']}")
-    c.drawString(100, 730, f"Medicamento: {paciente['medicamento']}")
-    c.drawString(100, 710, f"Dosis: {paciente['dosis']}")
-    c.drawString(100, 690, f"Frecuencia: {paciente['frecuencia']}")
-    c.drawString(100, 670, f"Observaciones: {paciente['observaciones']}")
+    c.drawString(100, 750, "Receta Médica")
+    c.line(100, 745, 500, 745)
+    fecha_formateada = receta_data['fecha_cita'].strftime('%d/%m/%Y %H:%M') if isinstance(receta_data['fecha_cita'], datetime) else 'N/A'
+    c.drawString(100, 730, f"Fecha de Exploración: {fecha_formateada}")
+    y_position -= line_height * 2
 
+    # Información del Paciente
+    c.drawString(100, 700, "Datos del Paciente")
+    c.line(100, 695, 300, 695)
+    
+    c.drawString(100, 675, f"Paciente: {receta_data['nombre_paciente'] or 'N/A'}")
+    y_position -= line_height * 1.2
+    
+    fecha_nacimiento = receta_data['fecha_nacimiento_paciente'].strftime('%d/%m/%Y') if isinstance(receta_data['fecha_nacimiento_paciente'], date) else 'N/A'
+    c.drawString(100, 660, f"Fecha de Nacimiento: {fecha_nacimiento}")
+    y_position -= line_height * 1.2
+    
+    c.drawString(100, 645, f"Enfermedades Crónicas: {receta_data['enfermedadescronicas'] or 'N/A'}")
+    y_position -= line_height * 1.2
+    
+    c.drawString(100, 630, f"Alergías: {receta_data['alergias'] or 'N/A'}")
+    y_position -= line_height * 1.2
+    
+    c.drawString(100, 615, f"Antecedentes familiares: {receta_data['antecedentesfam'] or 'N/A'}")
+    
+    
+    
+
+    c.drawString(100, y_position, "Síntomas:")
+    y_position -= line_height * 0.8
+    textobject_sintomas = c.beginText(120, y_position)
+    sintomas_text = receta_data['sintomas'] or 'No especificado'
+    textobject_sintomas.textLines(sintomas_text)
+    c.drawText(textobject_sintomas)
+    y_position -= (len(sintomas_text.splitlines()) * line_height) + (line_height * 1.5)
+
+    c.drawString(100, y_position, "Diagnóstico:")
+    y_position -= line_height * 0.8
+    textobject_diagnostico = c.beginText(120, y_position)
+    diagnostico_text = receta_data['diagnostico'] or 'No especificado'
+    textobject_diagnostico.textLines(diagnostico_text)
+    c.drawText(textobject_diagnostico)
+    y_position -= (len(diagnostico_text.splitlines()) * line_height) + (line_height * 1.5)
+
+    c.drawString(100, y_position, "Tratamiento:")
+    y_position -= line_height * 0.8
+    textobject_tratamiento = c.beginText(120, y_position)
+    tratamiento_text = receta_data['tratamiento'] or 'No especificado'
+    textobject_tratamiento.textLines(tratamiento_text)
+    c.drawText(textobject_tratamiento)
+    y_position -= (len(tratamiento_text.splitlines()) * line_height) + (line_height * 2)
+
+    estudios_str = "Sí" if receta_data['estudios'] else "No"
+    c.drawString(100, y_position, f"¿Requiere estudios?: {estudios_str}")
+    y_position -= line_height * 4
+    
+    #Información de la Cita
+    c.drawString(100, y_position, f"Peso: {receta_data['peso']} kg")
+    y_position -= line_height
+    c.drawString(100, y_position, f"Altura: {receta_data['altura']} metros")
+    y_position -= line_height
+    c.drawString(100, y_position, f"Temperatura: {receta_data['temperatura']} °C")
+    y_position -= line_height
+    c.drawString(100, y_position, f"Latidos por minuto: {receta_data['latidosmin']} lmp")
+    y_position -= line_height
+    c.drawString(100, y_position, f"Saturación de oxígeno: {receta_data['saturacionoxigeno']} %")
+    y_position -= line_height
+    c.drawString(100, y_position, f"Glucosa: {receta_data['glucosa']} mg/dL")
+    y_position -= line_height*2
+    
+
+    # Información del Médico
+    c.drawString(100, y_position, "Datos del Médico")
+    c.line(100, y_position-5, 300, 280 )
+    y_position -= line_height * 2
+    c.drawString(100, y_position, f"Dr(a).: {receta_data['nombre_medico']}")
+    y_position -= line_height
+    c.drawString(100, y_position, f"Cédula Profesional: {receta_data['cedulaprofesional']}")
+    y_position -= line_height
+    c.drawString(100, y_position, f"Correo: {receta_data['correo_medico']}")
+    y_position -= line_height
+    
     c.showPage()
     c.save()
 
-    return pdf_path
+    return pdf_path, None
 
-# Esta función es un placeholder y no obtiene datos de la BD.
-# Deberías usar 'get_paciente_by_id_from_db' o una función similar que consulte tu BD.
-def get_paciente_by_id(paciente_id):
-    # Esto es solo un ejemplo estático.
-    # Idealmente, deberías obtener los datos reales del paciente y su receta de la base de datos.
-    return {
-        "nombre": "Juan Pérez",
-        "medicamento": "Paracetamol",
-        "dosis": "500mg",
-        "frecuencia": "Cada 8 horas",
-        "observaciones": "Tomar después de las comidas."
-    }
 
-def get_paciente_by_id_from_db(paciente_id):
+@app.route('/receta/preview/<int:cita_id>', endpoint='receta.preview')
+def receta_preview(cita_id):
+    
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("""
-        SELECT idpaciente, nombrecompleto, fechanacimiento, enfermedadescronicas, alergias, antecedentesfam, idmedico, status
-        FROM pacientes
-        WHERE idpaciente = %s
-    """, (paciente_id,))
-    paciente = cursor.fetchone()
-    cursor.close()
-    return paciente
+    paciente_id = None
+
+    try:
+        cursor.execute("SELECT idpaciente FROM citas WHERE idcita = %s", (cita_id,))
+        result = cursor.fetchone()
+        if result:
+            paciente_id = result['idpaciente']
+        else:
+            flash("No se encontró la cita especificada.", "error")
+            return redirect(url_for('dashboard'))
+
+    except MySQLdb.MySQLError as e:
+        flash(f"Error al obtener información de la cita: {e}", "error")
+        return redirect(url_for('dashboard'))
+    finally:
+        cursor.close()
+
+    if paciente_id is None:
+        flash("No se pudo determinar el paciente para la cita.", "error")
+        return redirect(url_for('dashboard'))
+
+    pdf_path, error_message = generar_pdf_receta(cita_id)
+
+    if error_message:
+        flash(error_message, "error")
+        return redirect(url_for('citas_paciente', paciente_id=paciente_id))
+
+    pdf_static_path = os.path.join('pdfs', os.path.basename(pdf_path)).replace('\\', '/')
+    print(f"DEBUG: PDF estático generado en: {pdf_static_path}")
+
+    return render_template('Pacientes/receta.html',
+                           paciente_id=paciente_id,
+                           cita_id=cita_id,
+                           pdf_static_path=pdf_static_path)
+    
+    
+    
+
+@app.route('/receta/descargar/<int:cita_id>', endpoint='descargar.receta')
+def descargar_receta(cita_id):
+    """
+    Ruta para descargar la receta de una cita específica.
+    (Esta función se mantiene sin cambios, asumiendo que ya funciona correctamente)
+    """
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    paciente_id = None
+
+    try:
+        cursor.execute("SELECT idpaciente FROM citas WHERE idcita = %s", (cita_id,))
+        result = cursor.fetchone()
+        if result:
+            paciente_id = result['idpaciente']
+        else:
+            flash("No se encontró la cita especificada para descargar la receta.", "error")
+            return redirect(url_for('dashboard'))
+
+    except MySQLdb.MySQLError as e:
+        flash(f"Error al obtener información de la cita para descargar: {e}", "error")
+        return redirect(url_for('dashboard'))
+    finally:
+        cursor.close()
+
+    if paciente_id is None:
+        flash("No se pudo determinar el paciente para la descarga.", "error")
+        return redirect(url_for('dashboard'))
+
+    pdf_path, error_message = generar_pdf_receta(cita_id)
+
+    if error_message:
+        flash(error_message, "error")
+        return redirect(url_for('citas_paciente', paciente_id=paciente_id))
+
+    download_name = os.path.basename(pdf_path)
+    return send_file(pdf_path, as_attachment=True, download_name=download_name, mimetype='application/pdf')
+
 
 
 if __name__ == '__main__':
