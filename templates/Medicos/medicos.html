@@ -13,7 +13,7 @@
             </div>
             {% endif %}
     {% endwith %}
-    <a href="{{ url_for('doctores_agregar') }}" class="btn-agregar">Agregar</a>
+    <a href="{{ url_for('doctores.doctores_agregar') }}" class="btn-agregar">Agregar</a>
 {% endblock %}
 
 {% block styles %}
@@ -45,11 +45,11 @@
             <td>{{ medico.rol }}</td>
             <td>
                 <button class="btn-editar"><a
-                        href="{{ url_for('medicos_editar', medico_id=medico.idmedico) }}">Editar</a></button>
+                        href="{{ url_for('doctores.medicos_editar', medico_id=medico.idmedico) }}">Editar</a></button>
                 <button class="btn-eliminar"
                     onclick="showDeleteConfirmationMedico({{ medico.idmedico }})">Eliminar</button>
                 <form id="deleteFormMedico-{{ medico.idmedico }}"
-                    action="{{ url_for('medicos_eliminar', medico_id=medico.idmedico) }}" method="POST"
+                    action="{{ url_for('doctores.eliminar_medico', medico_id=medico.idmedico) }}" method="POST"
                     style="display:none;"></form>
             </td>
         </tr>

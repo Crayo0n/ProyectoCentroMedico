@@ -15,7 +15,7 @@
         {% endif %}
     {% endwith %}
 
-    <a href="{{ url_for('pacientes_agregar') }}" class="btn-agregar">Agregar</a>
+    <a href="{{ url_for('pacientes.pacientes_agregar') }}" class="btn-agregar">Agregar</a>
 {% endblock %}
 
 {% block styles %}
@@ -44,20 +44,20 @@
             <td>{{ paciente.alergias }}</td>
             <td>
                 <!-- Corregido el URL para que pase el paciente_id -->
-                <a href="{{ url_for('citas_paciente', paciente_id=paciente.idpaciente) }}">
+                <a href="{{ url_for('pacientes.citas_paciente', paciente_id=paciente.idpaciente) }}">
                     <button class="btn-citas">Citas</button>
                 </a>
 
-                <a href="{{ url_for('pacientes_editar', paciente_id=paciente.idpaciente) }}">
+                <a href="{{ url_for('pacientes.pacientes_editar', paciente_id=paciente.idpaciente) }}">
                     <button class="btn-editar">Editar</button>
                 </a>
-                <a href="{{ url_for('guardar_exploracion', paciente_id=paciente.idpaciente) }}">
+                <a href="{{ url_for('pacientes.guardar_exploracion', paciente_id=paciente.idpaciente) }}">
                     <button type="button" class="btn-explorar">Exploración</button>
                 </a>
 
                 <!-- Formulario oculto por paciente -->
                 <form id="deleteFormPaciente-{{ paciente.idpaciente }}" method="POST"
-                    action="{{ url_for('pacientes_eliminar', paciente_id=paciente.idpaciente) }}" style="display:none;">
+                    action="{{ url_for('pacientes.pacientes_eliminar', paciente_id=paciente.idpaciente) }}" style="display:none;">
                 </form>
 
                 <!-- Botón que activa el modal -->

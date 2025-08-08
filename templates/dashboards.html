@@ -16,18 +16,18 @@
                 <div class="logo-wrapper">
                     <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-iconLogo">
                 </div>
-                <a href="{{ url_for('pacientes') }}">
+                <a href="{{ url_for('pacientes.pacientes') }}">
                     <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuarios" class="sidebar-icon">
                 </a>
                 {% if session['rol'] == 'Admin' %}
-                <a href="{{ url_for('doctores') }}">
+                <a href="{{ url_for('doctores.doctores') }}">
                     <img src="{{ url_for('static', filename='img/doctores.png') }}" class="sidebar-icon" alt="Doctores">
                 </a>
                 {% endif %}
             </div>
 
             <div class="sidebar-bottom">
-                <a href="{{ url_for('Salir') }}">
+                <a href="{{ url_for('gestion.Salir') }}">
                     <img src="{{ url_for('static', filename='img/CerrarSesion.png') }}" alt="Salir"
                         class="sidebar-iconSalir logout">
                 </a>
