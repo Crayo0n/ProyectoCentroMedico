@@ -2,13 +2,14 @@ from flask import Flask, jsonify, render_template, request, flash, redirect, url
 from flask_mysqldb import MySQL
 import MySQLdb
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
 # Configuración MySQL
 app.config['MYSQL_HOST'] = "localhost"
 app.config['MYSQL_USER'] = "root"
-app.config['MYSQL_PASSWORD'] = "U41578780o"
+app.config['MYSQL_PASSWORD'] = "12345678"
 app.config['MYSQL_DB'] = "Clinica_DB"
 app.secret_key = 'mysecretkey'
 
@@ -23,7 +24,6 @@ def DB_check():
         return jsonify({'status': 'ok', 'message': 'Conectado con éxito'}), 200
     except MySQLdb.MySQLError as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
-    
 
 # Manejo de error 404
 @app.errorhandler(404)
@@ -34,7 +34,6 @@ def PagNoE(e):
 def Salir():
     session.clear()
     return redirect(url_for('login'))
-
 
 # Validación de Login
 @app.route('/', methods=['GET', 'POST'])
@@ -51,10 +50,36 @@ def login():
             WHERE m.rfc = %s AND m.status = 1
         """, (rfc,))
         medico = cursor.fetchone()
-        cursor.close()
 
         if medico:
-            if password == medico['contrasena']:
+            stored = medico.get('contrasena') or ''
+            password_ok = False
+            is_hashed = False
+            if isinstance(stored, str):
+                if stored.startswith('pbkdf2:') or stored.startswith('argon2:') or (':' in stored and '$' in stored):
+                    is_hashed = True
+
+            if is_hashed:
+                try:
+                    if check_password_hash(stored, password):
+                        password_ok = True
+                except Exception:
+                    password_ok = False
+            else:
+                if password == stored:
+                    password_ok = True
+                    try:
+                        new_hash = generate_password_hash(password)
+                        upd_cursor = mysql.connection.cursor()
+                        upd_cursor.execute("UPDATE medicos SET contrasena = %s WHERE idmedico = %s", (new_hash, medico['idmedico']))
+                        mysql.connection.commit()
+                        upd_cursor.close()
+                    except MySQLdb.MySQLError:
+                        pass
+
+            cursor.close()
+
+            if password_ok:
                 session['idmedico'] = medico['idmedico']
                 session['nombre'] = medico['nombrecompleto']
                 session['rol'] = medico['nombre']
@@ -66,31 +91,30 @@ def login():
             else:
                 flash('Contraseña incorrecta')
         else:
+            cursor.close()
             flash('RFC no registrado')
 
     return render_template('login.html')
 
-# Módulo de Médicos
-@app.route('/medicos')
+# Ruta para listar doctores
+@app.route('/doctores')
 def doctores():
     if session.get('rol') != 'Admin':
-        flash("Acceso denegado. Solo los administradores pueden gestionar médicos.")
+        flash("Acceso denegado. Solo los administradores pueden ver esta página.")
         return redirect(url_for('login'))
 
-    search = request.args.get('search', '')
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("""
-        SELECT m.idmedico, m.nombrecompleto, m.rfc, m.cedulaprofesional, m.correo, r.nombre AS rol, m.status
+        SELECT m.idmedico, m.nombrecompleto, m.rfc, m.cedulaprofesional, m.correo, r.nombre AS rol_nombre, m.status
         FROM medicos m
         JOIN roles r ON m.idrol = r.idrol
-        WHERE m.status = 1 AND (m.rfc LIKE %s OR m.nombrecompleto LIKE %s)
-    """, ('%' + search + '%', '%' + search + '%'))
+        ORDER BY m.nombrecompleto
+    """)
     medicos = cursor.fetchall()
     cursor.close()
     return render_template('Medicos/medicos.html', medicos=medicos)
 
-
-#ruta para agregar un medico
+# Ruta para agregar un medico
 @app.route('/medicos/agregar', methods=['GET', 'POST'])
 def doctores_agregar():
     if session.get('rol') != 'Admin':
@@ -106,6 +130,7 @@ def doctores_agregar():
         cedula = request.form.get('cedula', '').strip()
         correo = request.form.get('correo', '').strip()
         contrasena = request.form.get('password', '').strip()
+        hashed_password = generate_password_hash(contrasena)
         idrol = request.form.get('rol', '').strip()
 
         datos = {
@@ -117,7 +142,6 @@ def doctores_agregar():
             'rol': idrol
         }
 
-        # Validaciones
         if not rfc:
             errores['rfc'] = 'El RFC es obligatorio.'
         elif len(rfc) != 12:
@@ -148,7 +172,7 @@ def doctores_agregar():
                 cursor.execute("""
                     INSERT INTO medicos (rfc, nombrecompleto, cedulaprofesional, correo, contrasena, idrol, status)
                     VALUES (%s, %s, %s, %s, %s, %s, 1)
-                """, (rfc, nombrecompleto, cedula, correo, contrasena, idrol))
+                """, (rfc, nombrecompleto, cedula, correo, hashed_password, idrol))
                 mysql.connection.commit()
                 flash("Médico agregado correctamente", 'success')
                 return redirect(url_for('doctores'))
@@ -161,12 +185,9 @@ def doctores_agregar():
             finally:
                 cursor.close()
 
-        # Si hay errores, se vuelve a renderizar el formulario
         return render_template('Medicos/agregar_medico.html', errores=errores, datos=datos)
 
     return render_template('Medicos/agregar_medico.html', errores=errores, datos={})
-
-
 
 # Ruta para editar médicos
 @app.route('/medicos/editar/<int:medico_id>', methods=['GET', 'POST'])
@@ -191,12 +212,15 @@ def medicos_editar(medico_id):
         return redirect(url_for('doctores'))
 
     if request.method == 'POST':
-        # Obtener los datos del formulario
         rfc = request.form.get('rfc', '').strip()
         nombrecompleto = request.form.get('nombrecompleto', '').strip()
         cedula = request.form.get('cedula', '').strip()
         correo = request.form.get('correo', '').strip()
         contrasena = request.form.get('password', '').strip()
+        if contrasena:
+            contrasena = generate_password_hash(contrasena)
+        else:
+            contrasena = medico['contrasena']
         rol_id = request.form.get('rol', '').strip()
 
         datos = {
@@ -208,7 +232,6 @@ def medicos_editar(medico_id):
             'idrol': rol_id
         }
 
-        # Validaciones
         if not rfc:
             errores['rfc'] = 'El RFC es obligatorio.'
         elif len(rfc) != 12:
@@ -225,9 +248,7 @@ def medicos_editar(medico_id):
         if not correo:
             errores['correo'] = 'El correo es obligatorio.'
 
-        if not contrasena:
-            errores['contrasena'] = 'La contraseña es obligatoria.'
-        elif len(contrasena) < 6:
+        if len(request.form.get('password', '')) > 0 and len(request.form.get('password', '')) < 6:
             errores['contrasena'] = 'La contraseña debe tener al menos 6 caracteres.'
 
         if not rol_id:
@@ -240,7 +261,6 @@ def medicos_editar(medico_id):
                     SET rfc = %s, nombrecompleto = %s, cedulaprofesional = %s, correo = %s, contrasena = %s, idrol = %s
                     WHERE idmedico = %s
                 """, (rfc, nombrecompleto, cedula, correo, contrasena, rol_id, medico_id))
-
                 mysql.connection.commit()
 
                 if cursor.rowcount == 0:
@@ -259,15 +279,10 @@ def medicos_editar(medico_id):
             finally:
                 cursor.close()
 
-        # En caso de errores, sobreescribimos los datos que ya tenías con el formulario
         medico.update(datos)
         return render_template('Medicos/editar_medico.html', medico=medico, errores=errores)
 
     return render_template('Medicos/editar_medico.html', medico=medico, errores=errores)
-
-
-
-
 
 # Ruta para eliminar médicos 
 @app.route('/medicos/eliminar/<int:medico_id>', methods=['POST'])
@@ -295,8 +310,6 @@ def medicos_eliminar(medico_id):
     
     return redirect(url_for('doctores'))
 
-
-
 # Módulo de Pacientes
 @app.route('/pacientes')
 def pacientes():
@@ -315,7 +328,6 @@ def pacientes():
     pacientes = cursor.fetchall()
     cursor.close()
     return render_template('Pacientes/pacientes.html', pacientes=pacientes)
-
 
 # Agregar paciente
 @app.route('/pacientes/agregar', methods=['GET', 'POST'])
@@ -354,7 +366,6 @@ def pacientes_agregar():
             cursor.close()
 
     return render_template('Pacientes/agregar_pacientes.html')
-
 
 # Editar paciente
 @app.route('/pacientes/editar/<int:paciente_id>', methods=['GET', 'POST'])
@@ -401,7 +412,6 @@ def pacientes_editar(paciente_id):
     cursor.close()
     return render_template('Pacientes/editar_pacientes.html', paciente=paciente)
 
-
 # Eliminar paciente 
 @app.route('/pacientes/eliminar/<int:paciente_id>', methods=['POST'])
 def pacientes_eliminar(paciente_id):
@@ -413,6 +423,7 @@ def pacientes_eliminar(paciente_id):
         if paciente_existente:
             cursor.execute("UPDATE pacientes SET status = 0 WHERE idpaciente = %s", (paciente_id,))
             mysql.connection.commit()
+            flash("Paciente eliminado correctamente.", 'success')
         else:
             flash("Error: Paciente no encontrado o ya estaba inactivo.", 'error')
     except MySQLdb.MySQLError as e:
@@ -422,9 +433,6 @@ def pacientes_eliminar(paciente_id):
         cursor.close()
 
     return redirect(url_for('pacientes'))
-
-
-
 
 
 @app.route('/pacientes/exploracion/<int:paciente_id>', methods=['GET', 'POST'])
@@ -453,7 +461,6 @@ def citas():
 @app.route('/diagnostico')
 def diagnostico():
     return render_template('Pacientes/diagnostico_paciente.html')
-
 
 @app.route('/exploracion/editar')
 def exploracion_editar():
