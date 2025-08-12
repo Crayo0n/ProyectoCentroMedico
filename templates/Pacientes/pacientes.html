@@ -57,12 +57,12 @@
 
                 <!-- Formulario oculto por paciente -->
                 <form id="deleteFormPaciente-{{ paciente.idpaciente }}" method="POST"
-                    action="{{ url_for('pacientes.pacientes_eliminar', paciente_id=paciente.idpaciente) }}" style="display:none;">
+                    action="{{ url_for('pacientes.eliminar_paciente', paciente_id=paciente.idpaciente) }}" style="display:none;">
                 </form>
 
                 <!-- Botón que activa el modal -->
                 <button type="button" class="btn-eliminar"
-                    onclick="showDeleteConfirmationPaciente({{ paciente.idpaciente }})">
+                    onclick="showDeleteConfirmationPaciente('{{ paciente.idpaciente }}')">
                     Eliminar
                 </button>
 

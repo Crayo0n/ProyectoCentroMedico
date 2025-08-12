@@ -64,7 +64,7 @@
 
 
                 <form id="deleteFormCita-{{ cita.idcita }}" method="POST" action="{{ url_for('eliminar_exploracion', cita_id=cita.idcita) }}" style="display:inline;">
-                        <button type="button" class="btn-eliminar" onclick="showDeleteConfirmation({{ cita.idcita }})">Eliminar</button>
+                        <button type="button" class="btn-eliminar" onclick="showDeleteConfirmation('{{ cita.idcita }}')">Eliminar</button>
                     </form>
             </td>
         </tr>

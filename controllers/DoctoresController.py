@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash
 from models.DoctoresModel import *
+from app import mysql
+from models.DoctoresModel import doctores_agregar as doctores_agregar_model #Se agrego en las correciones
+from models.DoctoresModel import medicos_editar as medicos_editar_model
 
 DoctoresBP= Blueprint('doctores',__name__)
 
@@ -75,7 +78,7 @@ def doctores_agregar():
 
         if not errores:
             try:
-                doctores_agregar(rfc,nombrecompleto,cedula,correo,contrasena,idrol)
+                doctores_agregar_model(rfc,nombrecompleto,cedula,correo,contrasena,idrol)
                 flash("Médico agregado correctamente", 'success')
                 return redirect(url_for('doctores.doctores'))
         
@@ -146,7 +149,7 @@ def medicos_editar(medico_id):
         if not errores:
             try:
                 # En este punto si no hay errores, realizamos la actualización.
-                medicos_editar(medico_id, rfc, nombrecompleto, cedula, correo, contrasena, rol_id)
+                medicos_editar_model(medico_id, rfc, nombrecompleto, cedula, correo, contrasena, rol_id)
                 flash("Médico actualizado correctamente", 'success')
                 return redirect(url_for('doctores.doctores'))
 
@@ -155,7 +158,7 @@ def medicos_editar(medico_id):
                 flash('Error: '+ str(e))
                 return redirect(url_for('doctores.doctores'))
 
-        return render_template('Medicos/editar_medico.html', medico=datos, errores=errores)
+        return render_template('Medicos/editar_medico.html', datos=datos, errores=errores)
 
     return render_template('Medicos/editar_medico.html', medico=medico, errores=errores)
 
@@ -167,8 +170,11 @@ def eliminar_medico(medico_id):
         flash("Acceso denegado. Solo los administradores pueden eliminar médicos.")
         return redirect(url_for('gestion.login'))
     try:
-        medicos_eliminar(medico_id)  
-        flash("Médico eliminado correctamente.", 'success')
+        resultado = eliminar_Medico(medico_id)  
+        if resultado:
+            flash("Médico eliminado correctamente.", 'success')
+        else:
+         flash("No se pudo eliminar el médico. Verifique que no tenga pacientes asignados.", 'error')   
     except Exception as e:
         mysql.connection.rollback()
         flash('Error: '+ str(e), 'error')

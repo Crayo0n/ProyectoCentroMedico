@@ -7,19 +7,19 @@
 
 
             <div class="form-box">
-                <form method="POST" action="{{ url_for('pacientes_editar', paciente_id=paciente.idpaciente) }}">
+                <form method="POST" action="{{ url_for('pacientes.pacientes_editar', paciente_id=paciente.idpaciente) }}">
                     <label for="nombrecompleto">Nombre completo:</label>
-                    <input type="text" name="nombre" value="{{ paciente.nombrecompleto }}" class="form-control">
-                    {% if errores.nombre %}
+                    <input type="text" name="nombrecompleto" value="{{ paciente.nombrecompleto }}" class="form-control">
+                    {% if errores.nombrecompleto %}
                     <small class="text-danger" style="color: red;">{{ errores.nombre }}</small>
                     {% endif %}
 
 
                     <label for="fechanacimiento">Fecha de nacimiento:</label>
-                    <input type="date" name="fecha_nacimiento" value="{{ paciente.fechanacimiento }}"
+                    <input type="date" name="fechanacimiento" value="{{ paciente.fechanacimiento }}"
                         class="form-control">
-                    {% if errores.fecha_nacimiento %}
-                    <small class="text-danger" style="color: red;">{{ errores.fecha_nacimiento }}</small>
+                    {% if errores.fechanacimiento %}
+                    <small class="text-danger" style="color: red;">{{ errores.fechanacimiento }}</small>
                     {% endif %}
 
 
@@ -39,7 +39,7 @@
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Guardar cambios</button>
-                        <a href="{{ url_for('pacientes') }}" class="cancelar">Cancelar</a>
+                        <a href="{{ url_for('pacientes.pacientes') }}" class="cancelar">Cancelar</a>
                     </div>
                 </form>
             </div>

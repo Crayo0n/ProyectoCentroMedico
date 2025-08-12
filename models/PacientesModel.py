@@ -41,7 +41,6 @@ def mostrar_Pacientes(idmedico):
 
 #Método para Agregar un Paciente
 def agregar_Paciente(idmedico, nombrecompleto, fechanacimiento_obj, enfermedades, alergias, antecedentes):
-    
     cursor = mysql.connection.cursor()
     try:
         cursor.execute("""
@@ -50,8 +49,6 @@ def agregar_Paciente(idmedico, nombrecompleto, fechanacimiento_obj, enfermedades
                 """, (idmedico, nombrecompleto, fechanacimiento_obj, enfermedades, alergias, antecedentes))
         mysql.connection.commit()
         print('Paciente agregado correctamente')
-        
-    
     except MySQLdb.MySQLError as e:
         mysql.connection.rollback()
         print(f"Error de base de datos al agregar paciente: {e}") 

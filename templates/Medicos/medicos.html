@@ -44,13 +44,21 @@
             <td>{{ medico.cedulaprofesional }}</td>
             <td>{{ medico.rol }}</td>
             <td>
-                <button class="btn-editar"><a
+                    <button class="btn-editar"><a
                         href="{{ url_for('doctores.medicos_editar', medico_id=medico.idmedico) }}">Editar</a></button>
-                <button class="btn-eliminar"
-                    onclick="showDeleteConfirmationMedico({{ medico.idmedico }})">Eliminar</button>
-                <form id="deleteFormMedico-{{ medico.idmedico }}"
-                    action="{{ url_for('doctores.eliminar_medico', medico_id=medico.idmedico) }}" method="POST"
-                    style="display:none;"></form>
+               
+                
+                
+                    <form id="deleteFormMedico-{{ medico.idmedico }}" method="POST"
+                    action="{{ url_for('doctores.eliminar_medico', medico_id=medico.idmedico) }}" style="display:none;">
+                    </form>
+
+
+                   <button class="btn-eliminar"
+                    onclick="showDeleteConfirmationMedico('{{ medico.idmedico }}')">
+                    Eliminar
+                   </button>
+
             </td>
         </tr>
         {% else %}
@@ -63,6 +71,7 @@
 
 
 
+<!-- Modal de Confirmación para Medicos -->
 <div id="confirmationModalMedico" class="modal">
     <div class="modal-content">
         <p>¿Estás seguro de que quieres eliminar este médico?</p>

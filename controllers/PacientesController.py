@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from datetime import datetime, date
 from models.PacientesModel import *
 
+
 PacientesBP= Blueprint('pacientes',__name__)
 
 # Módulo de Pacientes
@@ -74,7 +75,7 @@ def pacientes_agregar():
 
 #Ruta Editar Paciente
 @PacientesBP.route('/pacientes/editar/<int:paciente_id>', methods=['GET', 'POST'])
-def editar_paciente(paciente_id):
+def pacientes_editar(paciente_id):
 
     paciente = getByID(paciente_id)
     if not paciente:
@@ -85,19 +86,19 @@ def editar_paciente(paciente_id):
     datos = paciente
 
     if request.method == 'POST':
-        nombrecompleto = request.form['nombrecompleto'].strip()
-        fechanacimiento = request.form['fechanacimiento'].strip()
-        enfermedades = request.form['enfermedades'].strip()
-        alergias = request.form['alergias'].strip()
-        antecedentes = request.form['antecedentes'].strip()
+        nombrecompleto = request.form.get('nombrecompleto').strip()
+        fechanacimiento = request.form.get('fechanacimiento').strip()
+        enfermedades = request.form.get('enfermedadescronicas').strip()
+        alergias = request.form.get('alergias', '').strip()
+        antecedentes = request.form.get('antecedentesfam','').strip()
 
         # Guardamos los datos actualizados en un diccionario
         datos = {
             'nombrecompleto': nombrecompleto,
             'fechanacimiento': fechanacimiento,
-            'enfermedades': enfermedades,
+            'enfermedadescronicas': enfermedades,
             'alergias': alergias,
-            'antecedentes': antecedentes
+            'antecedentesfam': antecedentes
         }
 
         # Validación de los campos
@@ -110,7 +111,7 @@ def editar_paciente(paciente_id):
         if not alergias:
             errores['alergias'] = 'Las alergias son obligatorias.'
         if not antecedentes:
-            errores['antecedentes'] = 'Los antecedentes familiares son obligatorios.'
+            errores['antecedentesfam'] = 'Los antecedentes familiares son obligatorios.'
 
         if not errores:
             try:
@@ -122,9 +123,9 @@ def editar_paciente(paciente_id):
                 flash(f"Error al actualizar el paciente: {e}", 'error')
                 return redirect(url_for('pacientes.pacientes'))
 
-        return render_template('Pacientes/editar_paciente.html', errores=errores, datos=datos)
+        return render_template('Pacientes/editar_pacientes.html', errores=errores, datos=datos,paciente={'idpaciente': paciente_id})
 
-    return render_template('Pacientes/editar_paciente.html', paciente=paciente, errores=errores)
+    return render_template('Pacientes/editar_pacientes.html', paciente=paciente, errores=errores)
 
 
 # Ruta para eliminar un paciente
@@ -160,32 +161,34 @@ def guardar_exploracion(paciente_id):
         fecha = form_data.get('fecha', '').strip()
 
         # Validación de los datos
-        errors = {}
+        field_errors = {}
         if not fecha:
-            errors['fecha'] = "La fecha es obligatoria."
+            field_errors['fecha'] = "La fecha es obligatoria."
         try:
             # Convertir la fecha de string a formato DATETIME
             fechaNueva = datetime.strptime(fecha, '%Y-%m-%dT%H:%M')
         except ValueError:
-            errors['fecha'] = "Formato de fecha y hora inválido. Use YYYY-MM-DDTHH:MM."
+            field_errors['fecha'] = "Formato de fecha y hora inválido. Use YYYY-MM-DDTHH:MM."
             
         if not peso or not (1.0 <= float(peso) <= 300.0):
-            errors['peso'] = "El peso debe estar entre 1.0 y 300.0 kg."
+            field_errors['peso'] = "El peso debe estar entre 1.0 y 300.0 kg."
         if not altura or not (0.5 <= float(altura) <= 2.5):
-            errors['altura'] = "La altura debe estar entre 0.5 y 2.5 metros."
+            field_errors['altura'] = "La altura debe estar entre 0.5 y 2.5 metros."
         if not temperatura or not (35.0 <= float(temperatura) <= 42.0):
-            errors['temperatura'] = "La temperatura debe estar entre 35.0 y 42.0 °C."
+            field_errors['temperatura'] = "La temperatura debe estar entre 35.0 y 42.0 °C."
         if not latidos or not (40 <= int(latidos) <= 200):
-            errors['latidos'] = "Los latidos deben estar entre 40 y 200 lpm."
+            field_errors['latidos'] = "Los latidos deben estar entre 40 y 200 lpm."
         if not saturacion or not (70 <= float(saturacion) <= 100):
-            errors['saturacion'] = "La saturación debe estar entre 70% y 100%."
+            field_errors['saturacion'] = "La saturación debe estar entre 70% y 100%."
         if not glucosa or not (0 <= float(glucosa) <= 500.0):
-            errors['glucosa'] = "La glucosa debe estar en el rango adecuado."
+            field_errors['glucosa'] = "La glucosa debe estar en el rango adecuado."
 
 
         # Si hay errores, retornar al formulario
-        if errors:
-            return render_template('Pacientes/exploracion_paciente.html', paciente=paciente, errors=errors)
+        
+        if field_errors:
+            return render_template('Pacientes/exploracion_paciente.html', paciente=paciente, field_errors=field_errors)
+
 
         try:
             # Guardar la exploración (cita) en la base de datos
@@ -195,8 +198,9 @@ def guardar_exploracion(paciente_id):
         except Exception as e:
             flash(f"Error al guardar la exploración: {e}", 'error')
             return redirect(url_for('pacientes.pacientes'))
-
-    return render_template('Pacientes/exploracion_paciente.html', paciente=paciente)
+        
+    return render_template('Pacientes/exploracion_paciente.html', paciente=paciente, form_data={}, field_errors={})
+   
 
 #Ruta para citas de un paciente
 @PacientesBP.route('/paciente/citas/<int:paciente_id>', methods=['GET'])

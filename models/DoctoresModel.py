@@ -80,7 +80,7 @@ def medicos_editar(medico_id, rfc, nombrecompleto, cedula, correo, contrasena, r
 
         
 #Método para Eliminar Médico
-def medicos_eliminar(medico_id):
+def eliminar_Medico(medico_id):
     cursor = mysql.connection.cursor()
     try:
         cursor.execute("""
@@ -91,10 +91,13 @@ def medicos_eliminar(medico_id):
         # Si no se actualizó ninguna fila, significa que no había médico o ya estaba inactivo
         if cursor.rowcount == 0:
             print(f"El médico con ID {medico_id} no existe o ya estaba inactivo.")
+            return False
         else:
             print(f"Médico con ID {medico_id} eliminado correctamente.")
+            return True
     except MySQLdb.MySQLError as e:
         mysql.connection.rollback()
         print(f"Error al eliminar el médico: {e}")
+        return False
     finally:
         cursor.close()
