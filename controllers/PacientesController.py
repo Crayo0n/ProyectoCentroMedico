@@ -101,17 +101,22 @@ def pacientes_editar(paciente_id):
             'antecedentesfam': antecedentes
         }
 
-        # Validación de los campos
+        # Validaciones
+
         if not nombrecompleto:
             errores['nombrecompleto'] = 'El nombre completo es obligatorio.'
+
         if not fechanacimiento:
             errores['fechanacimiento'] = 'La fecha de nacimiento es obligatoria.'
-        if not enfermedades:
-            errores['enfermedades'] = 'Las enfermedades crónicas son obligatorias.'
-        if not alergias:
-            errores['alergias'] = 'Las alergias son obligatorias.'
-        if not antecedentes:
-            errores['antecedentesfam'] = 'Los antecedentes familiares son obligatorios.'
+        else:
+            try:
+                fechanacimiento_obj = datetime.strptime(fechanacimiento, '%Y-%m-%d').date()
+            
+                if fechanacimiento_obj > date.today():
+                    errores['fechanacimiento'] = 'La fecha de nacimiento no puede estar en el futuro.'
+
+            except ValueError:
+                errores['fechanacimiento'] = 'Formato de fecha inválido. Use dd-mm-aaaa.'
 
         if not errores:
             try:
@@ -187,7 +192,7 @@ def guardar_exploracion(paciente_id):
         # Si hay errores, retornar al formulario
         
         if field_errors:
-            return render_template('Pacientes/exploracion_paciente.html', paciente=paciente, field_errors=field_errors)
+            return render_template('Pacientes/exploracion_paciente.html', paciente=paciente, field_errors=field_errors, form_data=form_data )
 
 
         try:
@@ -209,6 +214,7 @@ def citas_paciente(paciente_id):
     try:
         # Obtener los datos del paciente
         paciente = getByID(paciente_id)
+        nombre_paciente = paciente['nombrecompleto'] if paciente else 'Desconocido'
         if not paciente:
             flash("Paciente no encontrado.", 'error')
             return redirect(url_for('pacientes.pacientes'))
@@ -221,7 +227,7 @@ def citas_paciente(paciente_id):
             flash("Este paciente no tiene citas registradas.", 'info')
 
         # Renderizar la plantilla con los datos del paciente y las citas
-        return render_template('Pacientes/citas_paciente.html', paciente=paciente, exploraciones=citas)
+        return render_template('Pacientes/citas_paciente.html', paciente=paciente, exploraciones=citas,nombre_paciente=nombre_paciente)
 
     except Exception as e:
         flash(f"Error al obtener las citas: {e}", 'error')
@@ -299,7 +305,7 @@ def eliminar_exploracion(cita_id):
         flash(f"Error a la cita del paciente: {e}", 'error')
 
     # Redirigir a la página de citas del paciente
-    return redirect(url_for('citas_paciente', paciente_id=paciente_id))
+    return redirect(url_for('pacientes.citas_paciente', paciente_id=paciente_id))
 
 
 
@@ -313,7 +319,7 @@ def crear_diagnostico(cita_id):
 
     try:
         cita=obtener_cita_diagnostico(cita_id)
-        flash("Diagnostico creado correctamente.", 'success')
+        
     
     except Exception as e:
         flash(f"Error al obtener los datos de la cita: {e}", "error")
@@ -365,7 +371,7 @@ def crear_diagnostico(cita_id):
             # Guardar o actualizar el diagnóstico en la base de datos
             guardar_o_actualizar_diagnostico(cita_id, sintomas, diagnostico_texto, tratamiento_texto, requiere_estudios)
             flash("Diagnóstico guardado correctamente.", "success")
-            return redirect(url_for('citas_paciente', paciente_id=cita['idpaciente']))
+            return redirect(url_for('pacientes.citas_paciente', paciente_id=cita['idpaciente']))
 
         except Exception as e:
             flash(f"Error al guardar el diagnóstico: {e}", "error")

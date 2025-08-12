@@ -25,7 +25,7 @@ def mostrar_Pacientes(idmedico):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     try:
         cursor.execute("""
-            SELECT p.idpaciente, p.nombrecompleto, p.fechanacimiento, p.enfermedadescronicas, p.alergias, m.nombrecompleto AS medico
+            SELECT p.idpaciente, p.nombrecompleto, p.fechanacimiento, p.enfermedadescronicas, p.alergias,    p.antecedentesfam ,  m.nombrecompleto AS medico
             FROM pacientes p
             JOIN medicos m ON p.idmedico = m.idmedico
             WHERE p.idmedico = %s AND p.status = 1
@@ -227,7 +227,7 @@ def obtener_diagnostico(cita_id):
 
 # Método para guardar o actualizar el diagnóstico de un paciente
 def guardar_o_actualizar_diagnostico(cita_id, sintomas, diagnostico_texto, tratamiento_texto, requiere_estudios):
-    cursor = mysql.connection.cursor()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor) 
     
     try:
         # Verificar si ya existe un diagnóstico

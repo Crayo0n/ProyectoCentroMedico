@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash
 from models.DoctoresModel import *
 from app import mysql
 from models.DoctoresModel import doctores_agregar as doctores_agregar_model #Se agrego en las correciones
-from models.DoctoresModel import medicos_editar as medicos_editar_model
+
 
 DoctoresBP= Blueprint('doctores',__name__)
 
@@ -102,6 +102,9 @@ def medicos_editar(medico_id):
     errores = {}
     datos = {}
     medico = getByID(medico_id)
+    if not medico:
+        flash("Médico no encontrado.", "error")
+        return redirect(url_for('doctores.doctores'))
 
     if request.method == 'POST':
         # Obtener los datos del formulario
@@ -113,6 +116,7 @@ def medicos_editar(medico_id):
         rol_id = request.form.get('rol', '').strip()
 
         datos = {
+            'idmedico': medico_id,
             'rfc': rfc,
             'nombrecompleto': nombrecompleto,
             'cedulaprofesional': cedula,
@@ -149,7 +153,7 @@ def medicos_editar(medico_id):
         if not errores:
             try:
                 # En este punto si no hay errores, realizamos la actualización.
-                medicos_editar_model(medico_id, rfc, nombrecompleto, cedula, correo, contrasena, rol_id)
+                update_medico(medico_id, rfc, nombrecompleto, cedula, correo, contrasena, rol_id)
                 flash("Médico actualizado correctamente", 'success')
                 return redirect(url_for('doctores.doctores'))
 
@@ -158,9 +162,9 @@ def medicos_editar(medico_id):
                 flash('Error: '+ str(e))
                 return redirect(url_for('doctores.doctores'))
 
-        return render_template('Medicos/editar_medico.html', datos=datos, errores=errores)
+        return render_template('Medicos/editar_medico.html', medico=datos, errores=errores, medico_id=medico_id)
 
-    return render_template('Medicos/editar_medico.html', medico=medico, errores=errores)
+    return render_template('Medicos/editar_medico.html', medico=medico, errores=errores, medico_id=medico_id)
 
 
 #Ruta para Eliminar Médico

@@ -57,7 +57,7 @@ def doctores_agregar(rfc, nombrecompleto, cedula, correo, contrasena, idrol):
 
         
 #Método para actualizar Médico
-def medicos_editar(medico_id, rfc, nombrecompleto, cedula, correo, contrasena, rol_id):
+def update_medico(medico_id, rfc, nombrecompleto, cedula, correo, contrasena, rol_id):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     try:
         cursor.execute("""

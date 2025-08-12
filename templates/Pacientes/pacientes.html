@@ -31,6 +31,7 @@
             <th>Fecha Nacimiento</th>
             <th>Enfermedades</th>
             <th>Alergias</th>
+            <th>Antecedentes familiares</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -42,6 +43,7 @@
             <td>{{ paciente.fechanacimiento }}</td>
             <td>{{ paciente.enfermedadescronicas }}</td>
             <td>{{ paciente.alergias }}</td>
+            <td>{{ paciente.antecedentesfam }}</td>
             <td>
                 <!-- Corregido el URL para que pase el paciente_id -->
                 <a href="{{ url_for('pacientes.citas_paciente', paciente_id=paciente.idpaciente) }}">
@@ -55,7 +57,7 @@
                     <button type="button" class="btn-explorar">Exploración</button>
                 </a>
 
-                <!-- Formulario oculto por paciente -->
+                
                 <form id="deleteFormPaciente-{{ paciente.idpaciente }}" method="POST"
                     action="{{ url_for('pacientes.eliminar_paciente', paciente_id=paciente.idpaciente) }}" style="display:none;">
                 </form>

@@ -7,17 +7,8 @@
                 <h2>Paciente: {{ cita.nombre_paciente }}</h2>
                 <p>Fecha de exploración: {{ cita.fecha.strftime('%Y-%m-%d %H:%M') }}</p>
 
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                {% endwith %}
 
-                <form method="POST" action="{{ url_for('crear_diagnostico', cita_id=cita.idcita) }}">
+                <form method="POST" action="{{ url_for('pacientes.crear_diagnostico', cita_id=cita.idcita) }}">
                     
                     
                         <label for="sintomas">Síntomas:</label>
@@ -41,20 +32,22 @@
                         <label for="estudios">¿Requiere estudios?</label>
                         <div class="estudios">
                             <label>
-                                <input type="radio" name="estudios" value="si" 
-                                    {% if (form_data and form_data.estudios == 'si') or (not form_data and diagnostico and diagnostico.requiere_estudios) %}checked{% endif %} > Sí
+                            <input type="radio" name="estudios" value="si"
+                                {% if (form_data and form_data.get('estudios') == 'si')
+                                or (not form_data and diagnostico and diagnostico.estudios) %}checked{% endif %}> Sí
                             </label>
+
                             <label>
-                                <input type="radio" name="estudios" value="no" 
-                                    {% if (form_data and form_data.estudios == 'no') or (not form_data and diagnostico and not diagnostico.requiere_estudios) %}checked{% endif %} > No
+                            <input type="radio" name="estudios" value="no"
+                                {% if (form_data and form_data.get('estudios') == 'no')
+                                 or (not form_data and diagnostico and not diagnostico.estudios) %}checked{% endif %}> No
                             </label>
                         </div>
-                        {% if errors.estudios %}<small class="text-danger" style="color: red;">{{ errors.estudios }}</small>{% endif %}
-                    
+                        {% if errors.estudios %}<small class="text-danger">{{ errors.estudios }}</small>{% endif %}
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Guardar</button>
-                        <a href="{{ url_for('citas_paciente', paciente_id=cita.idpaciente) }}" class="cancelar">Cancelar</a>
+                        <a href="{{ url_for('pacientes.citas_paciente', paciente_id=cita.idpaciente) }}" class="cancelar">Cancelar</a>
                     </div>
                 </form>
             </div>

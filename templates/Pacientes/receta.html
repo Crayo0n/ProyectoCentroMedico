@@ -18,13 +18,13 @@
                 <h1>Previsualizar Receta</h1>
 
                 <!-- La ruta del PDF ahora es dinámica, pasada desde el backend de Flask -->
-                <embed src="{{ url_for('static', filename=pdf_static_path) }}" width="100%" height="600px" type="application/pdf">
+                <embed src="{{ pdf_static_path }}" width="100%" height="600px" type="application/pdf">
 
                 <div class="form-buttons">
                     <!-- El enlace de descarga ahora usa el cita_id específico -->
-                    <a href="{{ url_for('descargar.receta', cita_id=cita_id) }}" class="btn-descargar">Descargar PDF</a>
+                    <a href="{{ url_for('receta.descargar_receta', cita_id=cita_id) }}" class="btn-descargar">Descargar PDF</a>
                     <!-- El enlace para volver a citas sigue usando el paciente_id -->
-                    <a href="{{ url_for('citas_paciente', paciente_id=paciente_id) }}" class="cancelar">Volver a Citas</a>
+                    <a href="{{ url_for('pacientes.citas_paciente', paciente_id=paciente_id) }}" class="cancelar">Volver a Citas</a>
                 </div>
             </div>
         </div>

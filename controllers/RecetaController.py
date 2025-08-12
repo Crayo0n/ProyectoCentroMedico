@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, send_file
+from flask import Blueprint, render_template, flash, redirect, url_for, send_file, current_app
 from models.RecetaModel import *
 import sys
 import os
@@ -28,7 +28,7 @@ def receta_preview(cita_id):
         flash("No se pudo determinar el paciente para la cita.", "error")
         return redirect(url_for('dashboard'))
 
-    pdf_path, error_message = generar_pdf_receta(cita_id)
+    pdf_path, error_message = generar_pdf_receta(current_app, cita_id)
 
     if error_message:
         flash(error_message, "error")
@@ -69,7 +69,7 @@ def descargar_receta(cita_id):
         flash("No se pudo determinar el paciente para la descarga.", "error")
         return redirect(url_for('dashboard'))
 
-    pdf_path, error_message = generar_pdf_receta(cita_id)
+    pdf_path, error_message = generar_pdf_receta(current_app, cita_id)
 
     if error_message:
         flash(error_message, "error")
