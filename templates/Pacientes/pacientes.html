@@ -23,6 +23,14 @@
 {% endblock %}
 
 {% block content %}
+<form method="GET" action="{{ url_for('pacientes.pacientes') }}">
+    <div class="search-container">
+        <input type="text" name="q" placeholder="Buscar paciente por nombre" value="{{ request.args.get('q', '') }}">
+        <button type="submit">Buscar</button>
+    </div>
+</form>
+
+
 <table>
     <thead>
         <tr>

@@ -11,17 +11,26 @@ DoctoresBP= Blueprint('doctores',__name__)
 #Ruta para mostrar todos los Médicos
 @DoctoresBP.route('/medicos')
 def doctores():
+    
     if session.get('rol') != 'Admin':
         flash("Acceso denegado. Solo los administradores pueden gestionar médicos.")
         return redirect(url_for('gestion.login'))
-
-    try:
-        medicos=Mostrar_doctores()
-        return render_template('Medicos/medicos.html', medicos=medicos)
     
-    except Exception as e:
-        print('Error en la consulta: '+ str(e))
-        return render_template('Medicos/medicos.html', medicos=[])
+    termino_busqueda = request.args.get('q', '').strip()
+    
+    if termino_busqueda:
+        # Si hay término de búsqueda, obtenemos los médicos filtrados
+        medicos = buscar_medico_por_nombre(termino_busqueda)
+    else:
+
+        try:
+            medicos=Mostrar_doctores()
+    
+        except Exception as e:
+            print('Error en la consulta: '+ str(e))
+            medicos= []
+        
+    return render_template('Medicos/medicos.html', medicos=medicos, termino_busqueda=termino_busqueda)
     
     
 #Ruta para Agregar Médico

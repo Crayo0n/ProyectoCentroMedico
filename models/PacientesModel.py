@@ -18,6 +18,24 @@ def getByID(paciente_id):
         cursor.close()
     return paciente
 
+#Método para buscar pacientes por nombre
+def buscar_pacientes_por_nombre(termino_busqueda,idmedico):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    try:
+        cursor.execute("""
+            SELECT p.idpaciente, p.nombrecompleto, p.fechanacimiento, p.enfermedadescronicas, p.alergias, p.antecedentesfam, m.nombrecompleto AS medico
+            FROM pacientes p
+            JOIN medicos m ON p.idmedico = m.idmedico
+            WHERE p.nombrecompleto LIKE %s AND p.status = 1 AND p.idmedico = %s
+        """, ('%' + termino_busqueda + '%', idmedico))
+
+        pacientes = cursor.fetchall()
+        return pacientes
+    except MySQLdb.MySQLError as e:
+        print(f"Error al obtener los pacientes: {e}")
+        return []
+    finally:
+        cursor.close()
 
 
 #Método para ver todos los Pacientes
@@ -142,6 +160,24 @@ def citas_del_Paciente(paciente_id):
     finally:
         cursor.close()
     return citas
+
+
+#Método para buscar citas por fecha
+def buscar_citas_por_fecha(paciente_id, fecha_busqueda):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    try:
+        cursor.execute("""
+            SELECT idcita, fecha, peso, altura, temperatura, latidosmin, saturacionoxigeno, glucosa
+            FROM citas
+            WHERE idpaciente = %s AND fecha LIKE %s AND status = 1
+        """, (paciente_id, fecha_busqueda + '%'))  
+        citas = cursor.fetchall()
+        return citas
+    except MySQLdb.MySQLError as e:
+        print(f"Error al obtener citas: {e}")
+        return []
+    finally:
+        cursor.close()
 
 
 #Método para Editar la Exploración de un Paciente

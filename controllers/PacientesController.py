@@ -6,15 +6,23 @@ from models.PacientesModel import *
 PacientesBP= Blueprint('pacientes',__name__)
 
 # Módulo de Pacientes
-@PacientesBP.route('/pacientes')
+@PacientesBP.route('/pacientes', methods=['GET'])
 def pacientes():
-    try:
-        # Obtener todos los pacientes del médico actual
-        pacientes = mostrar_Pacientes(session['idmedico']) 
-        return render_template('Pacientes/pacientes.html', pacientes=pacientes)
-    except Exception as e:
-        flash(f"Error al cargar los pacientes: {e}", "error")
-        return render_template('Pacientes/pacientes.html', pacientes=[])
+    termino_busqueda = request.args.get('q', '').strip()
+    idmedico = session['idmedico']
+    
+    if termino_busqueda:
+        # Si hay término de búsqueda, obtenemos los pacientes filtrados
+        pacientes = buscar_pacientes_por_nombre(termino_busqueda,idmedico)
+    else:
+        try:
+            # Obtener todos los pacientes del médico actual
+            pacientes = mostrar_Pacientes(session['idmedico']) 
+        except Exception as e:
+            flash(f"Error al cargar los pacientes: {e}", "error")
+            pacientes = [] 
+
+    return render_template('Pacientes/pacientes.html', pacientes=pacientes, termino_busqueda=termino_busqueda)
     
     
 # Ruta para agregar Paciente
@@ -179,8 +187,8 @@ def guardar_exploracion(paciente_id):
             field_errors['peso'] = "El peso debe estar entre 1.0 y 300.0 kg."
         if not altura or not (0.5 <= float(altura) <= 2.5):
             field_errors['altura'] = "La altura debe estar entre 0.5 y 2.5 metros."
-        if not temperatura or not (35.0 <= float(temperatura) <= 42.0):
-            field_errors['temperatura'] = "La temperatura debe estar entre 35.0 y 42.0 °C."
+        if not temperatura or not (20.0 <= float(temperatura) <= 40.0):
+            field_errors['temperatura'] = "La temperatura debe estar entre 20.0 y 40.0 °C."
         if not latidos or not (40 <= int(latidos) <= 200):
             field_errors['latidos'] = "Los latidos deben estar entre 40 y 200 lpm."
         if not saturacion or not (70 <= float(saturacion) <= 100):
@@ -199,7 +207,7 @@ def guardar_exploracion(paciente_id):
             # Guardar la exploración (cita) en la base de datos
             exploración_Paciente(paciente_id, fechaNueva, peso, altura, temperatura, latidos, saturacion, glucosa)
             flash("Exploración guardada correctamente.", 'success')
-            return redirect(url_for('citas_paciente', paciente_id=paciente_id)) 
+            return redirect(url_for('pacientes.citas_paciente', paciente_id=paciente_id)) 
         except Exception as e:
             flash(f"Error al guardar la exploración: {e}", 'error')
             return redirect(url_for('pacientes.pacientes'))
@@ -210,28 +218,37 @@ def guardar_exploracion(paciente_id):
 #Ruta para citas de un paciente
 @PacientesBP.route('/paciente/citas/<int:paciente_id>', methods=['GET'])
 def citas_paciente(paciente_id):
+    fecha_busqueda = request.args.get('fecha', '').strip()  # Obtener el término de búsqueda de fecha
+    paciente = getByID(paciente_id)
 
-    try:
-        # Obtener los datos del paciente
-        paciente = getByID(paciente_id)
-        nombre_paciente = paciente['nombrecompleto'] if paciente else 'Desconocido'
-        if not paciente:
-            flash("Paciente no encontrado.", 'error')
+    # Verificar si el paciente existe
+    if not paciente:
+        flash("Paciente no encontrado.", 'error')
+        return redirect(url_for('pacientes.pacientes'))
+
+    nombre_paciente = paciente['nombrecompleto'] if paciente else 'Desconocido'
+
+    if fecha_busqueda:
+        # Si hay fecha de búsqueda, filtramos las citas
+        citas = buscar_citas_por_fecha(paciente_id, fecha_busqueda)
+        
+        if not citas:
+            flash(f"No se encontraron citas para la fecha {fecha_busqueda}.", 'info')
+        return render_template('Pacientes/citas_paciente.html', paciente=paciente, exploraciones=citas, nombre_paciente=nombre_paciente, fecha_busqueda=fecha_busqueda, paciente_id=paciente_id)
+
+    else:
+        try:
+            # Obtener las citas del paciente si no hay búsqueda por fecha
+            citas = citas_del_Paciente(paciente_id)
+            
+            if not citas:
+                flash("Este paciente no tiene citas registradas.", 'info')
+            return render_template('Pacientes/citas_paciente.html', paciente=paciente, exploraciones=citas, nombre_paciente=nombre_paciente, paciente_id=paciente_id)
+
+        except Exception as e:
+            flash(f"Error al obtener las citas: {e}", 'error')
             return redirect(url_for('pacientes.pacientes'))
 
-        # Obtener las citas del paciente
-        citas = citas_del_Paciente(paciente_id)
-
-        # Si no hay citas, se puede mostrar un mensaje
-        if not citas:
-            flash("Este paciente no tiene citas registradas.", 'info')
-
-        # Renderizar la plantilla con los datos del paciente y las citas
-        return render_template('Pacientes/citas_paciente.html', paciente=paciente, exploraciones=citas,nombre_paciente=nombre_paciente)
-
-    except Exception as e:
-        flash(f"Error al obtener las citas: {e}", 'error')
-        return redirect(url_for('pacientes.pacientes'))
 
 
 
@@ -270,8 +287,8 @@ def editar_exploracion(cita_id):
             errors['peso'] = "El peso debe estar entre 1.0 y 300.0 kg."
         if not altura or not (0.5 <= float(altura) <= 2.5):
             errors['altura'] = "La altura debe estar entre 0.5 y 2.5 metros."
-        if not temperatura or not (35.0 <= float(temperatura) <= 42.0):
-            errors['temperatura'] = "La temperatura debe estar entre 35.0 y 42.0 °C."
+        if not temperatura or not (20.0 <= float(temperatura) <= 40.0):
+            errors['temperatura'] = "La temperatura debe estar entre 20.0 y 40.0 °C."
         if not latidosmin or not (40 <= int(latidosmin) <= 200):
             errors['latidos'] = "Los latidos deben estar entre 40 y 200 lpm."
         if not saturacionoxigeno or not (70 <= float(saturacionoxigeno) <= 100):
@@ -287,7 +304,7 @@ def editar_exploracion(cita_id):
             # Actualizamos la exploración en la base de datos
             editar_exploración_Paciente(cita_id, fecha, peso, altura, temperatura, latidosmin, saturacionoxigeno, glucosa)
             flash("Exploración actualizada correctamente.", "success")
-            return redirect(url_for('citas_paciente', paciente_id=cita['idpaciente']))
+            return redirect(url_for('pacientes.citas_paciente', paciente_id=cita['idpaciente']))
         except Exception as e:
             flash(f"Error al actualizar la exploración: {e}", "error")
             return redirect(url_for('pacientes.pacientes'))

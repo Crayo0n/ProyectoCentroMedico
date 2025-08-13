@@ -16,7 +16,24 @@ def getByID(medico_id):
         cursor.close()
     return medicoID
 
+#Método para buscar médicos por nombre
+def buscar_medico_por_nombre(termino_busqueda):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    try:
+        cursor.execute("""
+            SELECT m.idmedico, m.nombrecompleto, m.rfc, m.cedulaprofesional, m.correo, r.nombre AS rol, m.status
+            FROM medicos m
+            JOIN roles r ON m.idrol = r.idrol
+            WHERE m.nombrecompleto LIKE %s AND m.status = 1
+        """, ('%' + termino_busqueda + '%',))
 
+        medicos = cursor.fetchall()
+        return medicos
+    except MySQLdb.MySQLError as e:
+        print(f"Error al obtener los médicos: {e}")
+        return []
+    finally:
+        cursor.close()
 
 #Método para visualizar todos los Médicos
 def Mostrar_doctores():

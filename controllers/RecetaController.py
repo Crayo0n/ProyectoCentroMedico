@@ -19,20 +19,20 @@ def receta_preview(cita_id):
             paciente_id = result['idpaciente']
         else:
             flash("No se encontró la cita especificada.", "error")
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('pacientes.citas_paciente'))
     except Exception as e:
         flash(f"Error al obtener información de la cita: {e}", "error")
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('pacientes.citas_paciente'))
 
     if paciente_id is None:
         flash("No se pudo determinar el paciente para la cita.", "error")
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('pacientes.citas_paciente'))
 
     pdf_path, error_message = generar_pdf_receta(current_app, cita_id)
 
     if error_message:
         flash(error_message, "error")
-        return redirect(url_for('citas_paciente', paciente_id=paciente_id))
+        return redirect(url_for('pacientes.citas_paciente', paciente_id=paciente_id))
 
     pdf_static_path = url_for('static', filename=f'pdfs/{os.path.basename(pdf_path)}')
     print(f"DEBUG: PDF estático generado en: {pdf_static_path}")
@@ -59,21 +59,21 @@ def descargar_receta(cita_id):
             paciente_id = result['idpaciente']
         else:
             flash("No se encontró la cita especificada para descargar la receta.", "error")
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('pacientes.citas_paciente'))
 
     except Exception as e:
         flash(f"Error al obtener información de la cita para descargar: {e}", "error")
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('pacientes.citas_paciente'))
     
     if paciente_id is None:
         flash("No se pudo determinar el paciente para la descarga.", "error")
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('pacientes.citas_paciente'))
 
     pdf_path, error_message = generar_pdf_receta(current_app, cita_id)
 
     if error_message:
         flash(error_message, "error")
-        return redirect(url_for('citas_paciente', paciente_id=paciente_id))
+        return redirect(url_for('pacientes.citas_paciente', paciente_id=paciente_id))
 
     download_name = os.path.basename(pdf_path)
     return send_file(pdf_path, as_attachment=True, download_name=download_name, mimetype='application/pdf')
