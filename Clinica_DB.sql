@@ -86,6 +86,9 @@ ADD COLUMN status INT DEFAULT 1;
 ALTER TABLE medicos
 ADD COLUMN status INT DEFAULT 1;
 
+ALTER TABLE citas
+ADD COLUMN status INT DEFAULT 1;
+
 
 select * from pacientes; 
 

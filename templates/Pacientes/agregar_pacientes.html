@@ -7,7 +7,7 @@
 
 
             <div class="form-box">
-                <form method="POST" action="{{ url_for('pacientes_agregar') }}">
+                <form method="POST" action="{{ url_for('pacientes.pacientes_agregar') }}">
                     <label for="nombrecompleto">Nombre completo:</label>
                     <input type="text" name="nombrecompleto" class="form-control" value="{{ datos.nombrecompleto }}">
                     {% if errores.nombrecompleto %}
@@ -32,17 +32,17 @@
 
 
                     <label for="enfermedadescronicas">Enfermedades crónicas:</label>
-                    <input type="text" id="enfermedadescronicas" name="enfermedadescronicas" placeholder="(Opcional)">
+                    <input type="text" id="enfermedadescronicas" name="enfermedadescronicas" placeholder="(Opcional)" value="{{ datos.enfermedadescronicas if datos else '' }}"> 
 
                     <label for="alergias">Alergias:</label>
-                    <input type="text" id="alergias" name="alergias" placeholder="(Opcional)">
+                    <input type="text" id="alergias" name="alergias" placeholder="(Opcional)" value="{{ datos.alergias if datos else '' }} ">
 
                     <label for="antecedentesfam">Antecedentes familiares:</label>
-                    <input type="text" id="antecedentesfam" name="antecedentesfam" placeholder="(Opcional)">
+                    <input type="text" id="antecedentesfam" name="antecedentesfam" placeholder="(Opcional)" value="{{ datos.antecedentesfam if datos else '' }}">
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Guardar</button>
-                        <a href="{{ url_for('pacientes') }}" class="cancelar">Cancelar</a>
+                        <a href="{{ url_for('pacientes.pacientes') }}" class="cancelar">Cancelar</a> <!--  Endpoint con blueprint-->
                     </div>
                 </form>
             </div>

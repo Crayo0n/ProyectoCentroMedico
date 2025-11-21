@@ -6,19 +6,19 @@
                 <h1>Exploración del paciente</h1>
 
 
-                <form method="POST" action="{{ url_for('guardar_exploracion', paciente_id=paciente.idpaciente) }}">
+                <form method="POST" action="{{ url_for('pacientes.guardar_exploracion', paciente_id=paciente.idpaciente) }}">
 
                     <input type="hidden" name="idpaciente" value="{{ paciente.idpaciente }}">
 
 
                     <label for="paciente_nombre">Paciente:</label>
                     <input type="text" id="paciente_nombre" name="paciente_nombre" value="{{ paciente.nombrecompleto }}"
-                        readonly>
+                        disabled>
 
 
 
                     <label for="fecha">Fecha:</label>
-                    <input type="datetime-local" id="fecha" name="fecha" value="{{ form_data.fecha if form_data.fecha else '' }}">
+                    <input type="datetime-local" id="fecha" name="fecha" value="{{ form_data.fecha if form_data and form_data.fecha else '' }}">
                     {% if field_errors.fecha %} {# Comprueba si hay un error para este campo #}
                     <span class="error-message" style="color: red;">{{ field_errors.fecha }}</span>
                     {% endif %}
@@ -27,7 +27,7 @@
 
                     <label for="peso">Peso:</label>
                     <input type="number" id="peso" name="peso" step="0.01"
-                        value="{{ form_data.peso if form_data.peso else '' }}" placeholder="Valor en kg">
+                      value="{{ form_data.peso if form_data and form_data.peso else '' }}" placeholder="Valor en kg">
                     {% if field_errors.peso %}
                     <span class="error-message" style="color: red;">{{ field_errors.peso }}</span>
                     {% endif %}
@@ -80,7 +80,7 @@
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Guardar</button>
-                        <a href="{{ url_for('pacientes') }}" class="cancelar">Cancelar</a>
+                        <a href="{{ url_for('pacientes.pacientes') }}" class="cancelar">Cancelar</a>
                     </div>
                 </form>
             </div>

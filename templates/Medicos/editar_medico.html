@@ -6,7 +6,9 @@
             <h1>Editar médico</h1>
 
             <div class="form-box">
-                <form method="POST" action="{{ url_for('medicos_editar', medico_id=medico.idmedico) }}">
+            <form method="POST" action="{{ url_for('doctores.medicos_editar', medico_id=medico_id) }}">
+                <input type="hidden" name="idmedico" value="{{ medico_id }}">
+
                     <label for="rfc">RFC:</label>
                     <input type="text" id="rfc" name="rfc" value="{{ medico.rfc }}">
                     {% if errores.rfc %}
@@ -32,7 +34,7 @@
                     {% endif %}
 
                     <label for="password">Contraseña:</label>
-                    <input type="password" id="password" name="password" value="{{ medico.contrasena }}">
+                    <input type="password" id="password" name="password" value="{{ medico.contrasena }}" >
                     {% if errores.contrasena %}
                     <small class="text-danger" style="color: red;">{{ errores.contrasena }}</small>
                     {% endif %}
@@ -49,7 +51,7 @@
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">Actualizar</button>
-                        <a href="{{ url_for('doctores') }}" class="cancelar">Cancelar</a>
+                        <a href="{{ url_for('doctores.doctores') }}" class="cancelar">Cancelar</a>
                     </div>
                 </form>
 

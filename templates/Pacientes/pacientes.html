@@ -15,7 +15,7 @@
         {% endif %}
     {% endwith %}
 
-    <a href="{{ url_for('pacientes_agregar') }}" class="btn-agregar">Agregar</a>
+    <a href="{{ url_for('pacientes.pacientes_agregar') }}" class="btn-agregar">Agregar</a>
 {% endblock %}
 
 {% block styles %}
@@ -23,6 +23,14 @@
 {% endblock %}
 
 {% block content %}
+<form method="GET" action="{{ url_for('pacientes.pacientes') }}">
+    <div class="search-container">
+        <input type="text" name="q" placeholder="Buscar paciente por nombre" value="{{ request.args.get('q', '') }}">
+        <button type="submit">Buscar</button>
+    </div>
+</form>
+
+
 <table>
     <thead>
         <tr>
@@ -31,6 +39,7 @@
             <th>Fecha Nacimiento</th>
             <th>Enfermedades</th>
             <th>Alergias</th>
+            <th>Antecedentes familiares</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -42,27 +51,28 @@
             <td>{{ paciente.fechanacimiento }}</td>
             <td>{{ paciente.enfermedadescronicas }}</td>
             <td>{{ paciente.alergias }}</td>
+            <td>{{ paciente.antecedentesfam }}</td>
             <td>
                 <!-- Corregido el URL para que pase el paciente_id -->
-                <a href="{{ url_for('citas_paciente', paciente_id=paciente.idpaciente) }}">
+                <a href="{{ url_for('pacientes.citas_paciente', paciente_id=paciente.idpaciente) }}">
                     <button class="btn-citas">Citas</button>
                 </a>
 
-                <a href="{{ url_for('pacientes_editar', paciente_id=paciente.idpaciente) }}">
+                <a href="{{ url_for('pacientes.pacientes_editar', paciente_id=paciente.idpaciente) }}">
                     <button class="btn-editar">Editar</button>
                 </a>
-                <a href="{{ url_for('guardar_exploracion', paciente_id=paciente.idpaciente) }}">
+                <a href="{{ url_for('pacientes.guardar_exploracion', paciente_id=paciente.idpaciente) }}">
                     <button type="button" class="btn-explorar">Exploración</button>
                 </a>
 
-                <!-- Formulario oculto por paciente -->
+                
                 <form id="deleteFormPaciente-{{ paciente.idpaciente }}" method="POST"
-                    action="{{ url_for('pacientes_eliminar', paciente_id=paciente.idpaciente) }}" style="display:none;">
+                    action="{{ url_for('pacientes.eliminar_paciente', paciente_id=paciente.idpaciente) }}" style="display:none;">
                 </form>
 
                 <!-- Botón que activa el modal -->
                 <button type="button" class="btn-eliminar"
-                    onclick="showDeleteConfirmationPaciente({{ paciente.idpaciente }})">
+                    onclick="showDeleteConfirmationPaciente('{{ paciente.idpaciente }}')">
                     Eliminar
                 </button>
 

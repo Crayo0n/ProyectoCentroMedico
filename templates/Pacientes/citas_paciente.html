@@ -3,7 +3,7 @@
 {% block title %}Citas del Paciente{% endblock %}
 
 {% block header %}
-<h1>Citas del paciente </h1>
+<h1>Citas del paciente:  {{ nombre_paciente }}</h1>
 
 <!-- Mostrar mensajes de flash -->
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -23,6 +23,14 @@
 
 
 {% block content %}
+
+<form method="GET" action="{{ url_for('pacientes.citas_paciente', paciente_id=paciente_id) }}">
+    <div class="search-container">
+        <input type="date" name="fecha" placeholder="Buscar por fecha (YYYY-MM-DD)" value="{{ fecha_busqueda }}">
+        <button type="submit">Buscar</button>
+    </div>
+</form>
+
 <table>
     <thead>
         <tr>
@@ -50,21 +58,21 @@
             <td>{{ cita.saturacionoxigeno }}%</td>
             <td>{{ cita.glucosa }}mg/dL</td>
             <td>
-                <a href="{{ url_for('editar_exploracion', cita_id=cita.idcita) }}">
+                <a href="{{ url_for('pacientes.editar_exploracion', cita_id=cita.idcita) }}">
                     <button class="btn-editar">Editar</button>
                 </a>
 
-                <a href="{{ url_for('crear_diagnostico', cita_id=cita.idcita) }}">
+                <a href="{{ url_for('pacientes.crear_diagnostico', cita_id=cita.idcita) }}">
                     <button class="btn-explorar"> Diagnóstico </button>
                 </a>
 
-                <a href="{{ url_for('receta.preview', cita_id=cita.idcita) }}">
+                <a href="{{ url_for('receta.receta_preview', cita_id=cita.idcita) }}">
                     <button href="#" class="btn-descargar">Descargar receta</button>
                 </a>
 
 
-                <form id="deleteFormCita-{{ cita.idcita }}" method="POST" action="{{ url_for('eliminar_exploracion', cita_id=cita.idcita) }}" style="display:inline;">
-                        <button type="button" class="btn-eliminar" onclick="showDeleteConfirmation({{ cita.idcita }})">Eliminar</button>
+                <form id="deleteFormCita-{{ cita.idcita }}" method="POST" action="{{ url_for('pacientes.eliminar_exploracion', cita_id=cita.idcita) }}" style="display:inline;">
+                        <button type="button" class="btn-eliminar" onclick="showDeleteConfirmation('{{ cita.idcita }}')">Eliminar</button>
                     </form>
             </td>
         </tr>

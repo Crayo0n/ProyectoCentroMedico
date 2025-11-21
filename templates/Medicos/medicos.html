@@ -13,7 +13,7 @@
             </div>
             {% endif %}
     {% endwith %}
-    <a href="{{ url_for('doctores_agregar') }}" class="btn-agregar">Agregar</a>
+    <a href="{{ url_for('doctores.doctores_agregar') }}" class="btn-agregar">Agregar</a>
 {% endblock %}
 
 {% block styles %}
@@ -21,6 +21,13 @@
 {% endblock %}
 
 {% block content %}
+
+<form method="GET" action="{{ url_for('doctores.doctores') }}">
+    <div class="search-container">
+        <input type="text" name="q" placeholder="Buscar médico por nombre" value="{{ request.args.get('q', '') }}">
+        <button type="submit">Buscar</button>
+    </div>
+</form>
 
 <table>
     <thead>
@@ -44,13 +51,21 @@
             <td>{{ medico.cedulaprofesional }}</td>
             <td>{{ medico.rol }}</td>
             <td>
-                <button class="btn-editar"><a
-                        href="{{ url_for('medicos_editar', medico_id=medico.idmedico) }}">Editar</a></button>
-                <button class="btn-eliminar"
-                    onclick="showDeleteConfirmationMedico({{ medico.idmedico }})">Eliminar</button>
-                <form id="deleteFormMedico-{{ medico.idmedico }}"
-                    action="{{ url_for('medicos_eliminar', medico_id=medico.idmedico) }}" method="POST"
-                    style="display:none;"></form>
+                    <button class="btn-editar"><a
+                        href="{{ url_for('doctores.medicos_editar', medico_id=medico.idmedico) }}">Editar</a></button>
+               
+                
+                
+                    <form id="deleteFormMedico-{{ medico.idmedico }}" method="POST"
+                    action="{{ url_for('doctores.eliminar_medico', medico_id=medico.idmedico) }}" style="display:none;">
+                    </form>
+
+
+                   <button class="btn-eliminar"
+                    onclick="showDeleteConfirmationMedico('{{ medico.idmedico }}')">
+                    Eliminar
+                   </button>
+
             </td>
         </tr>
         {% else %}
@@ -63,6 +78,7 @@
 
 
 
+<!-- Modal de Confirmación para Medicos -->
 <div id="confirmationModalMedico" class="modal">
     <div class="modal-content">
         <p>¿Estás seguro de que quieres eliminar este médico?</p>

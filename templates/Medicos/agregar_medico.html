@@ -9,7 +9,7 @@
 
             <div class="form-box">
                 <form method="POST"
-                    action="{{ url_for('doctores_agregar') if not medico else url_for('medicos_editar', medico_id=medico.idmedico) }}">
+                    action="{{ url_for('doctores.doctores_agregar')}}">
                     <!-- RFC -->
                     <label for="rfc">RFC:</label>
                     <input type="text" id="rfc" name="rfc" value="{{ datos.rfc }}">
@@ -60,7 +60,7 @@
 
                     <div class="form-buttons">
                         <button type="submit" class="guardar">{{ 'Actualizar' if medico else 'Agregar' }}</button>
-                        <a href="{{ url_for('doctores') }}" class="cancelar">Cancelar</a>
+                        <a href="{{ url_for('doctores.doctores') }}" class="cancelar">Cancelar</a>
                     </div>
                 </form>
 
